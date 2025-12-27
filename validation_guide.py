@@ -212,15 +212,22 @@ python pred.py
 # 3. 对比特定图像（如398.png）
 # 可以创建一个简单的对比脚本：
 
+import os
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
+# 配置路径
+data_dir = 'data/orange'  # 根据实际数据位置调整
+test_image = '398.png'
+old_model_dir = 'save/old_model/pred'  # 改进前的预测结果目录
+new_model_dir = 'save/mobile_sam_adapter/vit_change_2/pred'  # 改进后的预测结果目录
+
 # 加载图像
-original = Image.open('data/orange/images/398.png')
-gt = Image.open('data/orange/masks/398.png')
-pred_before = Image.open('save/old_model/pred/398.png')
-pred_after = Image.open('save/mobile_sam_adapter/vit_change_2/pred/398.png')
+original = Image.open(os.path.join(data_dir, 'images', test_image))
+gt = Image.open(os.path.join(data_dir, 'masks', test_image))
+pred_before = Image.open(os.path.join(old_model_dir, test_image))
+pred_after = Image.open(os.path.join(new_model_dir, test_image))
 
 # 创建对比图
 fig, axes = plt.subplots(1, 4, figsize=(16, 4))

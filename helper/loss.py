@@ -70,10 +70,6 @@ class BceDiceLoss(nn.Module):
         loss = self.wd * diceloss + self.wb * bceloss
         return loss
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-
 def make_edge_from_mask(mask, k: int = 3):
     """
     从二值分割掩码生成边界图（形态学梯度：dilate - erode）
