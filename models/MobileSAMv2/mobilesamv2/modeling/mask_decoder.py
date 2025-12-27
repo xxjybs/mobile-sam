@@ -67,6 +67,22 @@ class MaskDecoder(nn.Module):
         self.iou_prediction_head = MLP(
             transformer_dim, iou_head_hidden_dim, self.num_mask_tokens, iou_head_depth
         )
+        
+        # Detail refinement module for better small object detection
+        self.detail_refiner = nn.Sequential(
+            nn.Conv2d(1, 16, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(16, 16, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(16, 1, kernel_size=1)
+        )
+        
+        # Initialize detail refiner weights
+        for m in self.detail_refiner.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
         # self.mask_han=None
     def forward(
         self,
@@ -148,6 +164,16 @@ class MaskDecoder(nn.Module):
         hyper_in = torch.stack(hyper_in_list, dim=1)
         b, c, h, w = upscaled_embedding.shape
         masks = (hyper_in @ upscaled_embedding.view(b, c, h * w)).view(b, -1, h, w)
+        
+        # Apply detail refinement for better small object detection
+        # Process each mask in the batch
+        refined_masks = []
+        for i in range(masks.shape[1]):  # Iterate over mask tokens
+            mask_single = masks[:, i:i+1, :, :]  # Keep dimension [B, 1, H, W]
+            refined = mask_single + self.detail_refiner(mask_single)
+            refined_masks.append(refined)
+        masks = torch.cat(refined_masks, dim=1)  # Concatenate back to [B, num_masks, H, W]
+        
         # import pdb;pdb.set_trace()
         # Generate mask quality predictions
         iou_pred = self.iou_prediction_head(iou_token_out)
@@ -183,6 +209,15 @@ class MaskDecoder(nn.Module):
         hyper_in = torch.stack(hyper_in_list, dim=1)
         b, c, h, w = upscaled_embedding.shape
         masks = (hyper_in @ upscaled_embedding.view(b, c, h * w)).view(b, -1, h, w)
+        
+        # Apply detail refinement for better small object detection
+        refined_masks = []
+        for i in range(masks.shape[1]):
+            mask_single = masks[:, i:i+1, :, :]
+            refined = mask_single + self.detail_refiner(mask_single)
+            refined_masks.append(refined)
+        masks = torch.cat(refined_masks, dim=1)
+        
         iou_pred = self.iou_prediction_head(iou_token_out)
         return masks, iou_pred
 

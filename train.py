@@ -15,7 +15,7 @@ from models import model_dict
 from models.load_ckpt import load_checkpoint
 from dataset.OrangeDefectDataloader import OrangeDefectLoader
 from helper.util import AverageMeter, pred, Distill_one_epoch, train_one_epoch
-from helper.loss import IOU
+from helper.loss import IOU, SmallDefectLoss
 import random
 import shutil
 
@@ -129,6 +129,19 @@ def main():
     set_seed(seed=42, deterministic=True)
     cleanup()
     model = model_dict[model_name]()
+    
+    # Use SmallDefectLoss for better dense small defect detection
+    criterion_small_defect = SmallDefectLoss(
+        focal_weight=1.0,
+        tversky_weight=2.0,
+        iou_weight=1.0,
+        focal_alpha=0.25,
+        focal_gamma=2.0,
+        tversky_alpha=0.3,  # Favor recall over precision
+        tversky_beta=0.7    # Penalize false negatives more
+    )
+    
+    # Keep original losses for compatibility
     criterion_bce = torch.nn.BCEWithLogitsLoss()
     criterion_iou = IOU(is_onehot)
 
@@ -137,6 +150,7 @@ def main():
     if torch.cuda.is_available():
         device = torch.device('cuda')
         model.cuda()
+        criterion_small_defect.cuda()
         criterion_bce.cuda()
         criterion_iou.cuda()
         cudnn.benchmark = True
@@ -206,7 +220,7 @@ def main():
 
         current_lr = optimizer.param_groups[0]['lr']
         time1 = time.time()
-        losses = train_one_epoch(model, traindataloader, is_onehot, criterion_bce, criterion_iou, optimizer)
+        losses = train_one_epoch(model, traindataloader, is_onehot, criterion_bce, criterion_iou, optimizer, criterion_small_defect)
         scheduler.step()
 
         time2 = time.time()
@@ -231,7 +245,8 @@ def main():
                 if is_onehot:
                     loss = criterion_bce(logit, onehot.float()) + criterion_iou(logit, onehot.float())
                 else:
-                    loss = criterion_bce(logit, target.float()) + criterion_iou(logit, target.float())
+                    # Use SmallDefectLoss for validation too
+                    loss = criterion_small_defect(logit, target.float())
                 val_losses.update(loss.item(), input.size(0))
 
         time2 = time.time()

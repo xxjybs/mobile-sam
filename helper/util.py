@@ -214,7 +214,7 @@ def Distill_one_epoch(
 
 def train_one_epoch(
         model, traindataloader, is_onehot,
-        criterion_bce, criterion_iou, optimizer
+        criterion_bce, criterion_iou, optimizer, criterion_small_defect=None
 ):
     model.train()
     losses = AverageMeter()
@@ -229,7 +229,10 @@ def train_one_epoch(
         logit = model(input)
         # logit, boundary = model(input)
 
-        if is_onehot:
+        # Use SmallDefectLoss if provided for better dense small defect detection
+        if criterion_small_defect is not None and not is_onehot:
+            loss = criterion_small_defect(logit, target.float())
+        elif is_onehot:
             loss = criterion_bce(logit, onehot.float()) + criterion_iou(logit, onehot.float())
         else:
             loss = criterion_bce(logit, target.float()) + criterion_iou(logit, target.float()) #+ criterion_boundary(boundary, target)

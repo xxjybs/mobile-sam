@@ -184,3 +184,77 @@ class TverskyLoss(nn.Module):
         fn = (target * (1 - pred)).sum()
         tversky = (tp + self.smooth) / (tp + self.alpha * fp + self.beta * fn + self.smooth)
         return 1 - tversky
+
+
+class FocalLoss(nn.Module):
+    """
+    Focal Loss for addressing class imbalance, especially useful for small object detection.
+    Focuses more on hard-to-classify examples.
+    """
+    def __init__(self, alpha=0.25, gamma=2.0, reduction='mean'):
+        super(FocalLoss, self).__init__()
+        self.alpha = alpha
+        self.gamma = gamma
+        self.reduction = reduction
+
+    def forward(self, pred, target):
+        """
+        pred: logits from model (before sigmoid)
+        target: ground truth (0 or 1)
+        """
+        pred_sigmoid = torch.sigmoid(pred)
+        
+        # Calculate focal loss
+        pt = torch.where(target == 1, pred_sigmoid, 1 - pred_sigmoid)
+        focal_weight = (1 - pt) ** self.gamma
+        
+        # Binary cross entropy
+        bce = F.binary_cross_entropy_with_logits(pred, target, reduction='none')
+        
+        # Apply focal weight and alpha
+        focal_loss = self.alpha * focal_weight * bce
+        
+        if self.reduction == 'mean':
+            return focal_loss.mean()
+        elif self.reduction == 'sum':
+            return focal_loss.sum()
+        else:
+            return focal_loss
+
+
+class SmallDefectLoss(nn.Module):
+    """
+    Combined loss function optimized for detecting dense small defects.
+    Combines Focal Loss (for class imbalance), Tversky Loss (for recall), and IOU Loss.
+    """
+    def __init__(self, 
+                 focal_weight=1.0, 
+                 tversky_weight=2.0, 
+                 iou_weight=1.0,
+                 focal_alpha=0.25,
+                 focal_gamma=2.0,
+                 tversky_alpha=0.3,  # Lower alpha favors recall over precision
+                 tversky_beta=0.7):   # Higher beta penalizes false negatives more
+        super(SmallDefectLoss, self).__init__()
+        self.focal_weight = focal_weight
+        self.tversky_weight = tversky_weight
+        self.iou_weight = iou_weight
+        
+        self.focal_loss = FocalLoss(alpha=focal_alpha, gamma=focal_gamma)
+        self.tversky_loss = TverskyLoss(alpha=tversky_alpha, beta=tversky_beta)
+        self.iou_loss = IOU(is_onehot=False)
+    
+    def forward(self, pred, target):
+        """
+        pred: model predictions (logits)
+        target: ground truth masks
+        """
+        loss_focal = self.focal_loss(pred, target)
+        loss_tversky = self.tversky_loss(pred, target)
+        loss_iou = self.iou_loss(pred, target)
+        
+        total_loss = (self.focal_weight * loss_focal + 
+                     self.tversky_weight * loss_tversky + 
+                     self.iou_weight * loss_iou)
+        
+        return total_loss
