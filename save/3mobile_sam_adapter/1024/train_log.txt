@@ -1,0 +1,1084 @@
+===================  validation of model  ===================
+✅ Background IoU: 0.9213
+✅ Foreground IoU: 0.0012
+✅ Mean IoU (mIoU): 0.4613
+epoch 1 (phase 1), train, lr=0.001000, mean loss 3.560, total time 36.59
+epoch 1, val, mean loss 0.791, total time 5.61
+epoch 2 (phase 1), train, lr=0.001000, mean loss 3.456, total time 33.44
+epoch 2, val, mean loss 0.659, total time 5.51
+epoch 3 (phase 1), train, lr=0.001000, mean loss 3.157, total time 30.47
+epoch 3, val, mean loss 0.599, total time 5.51
+epoch 4 (phase 1), train, lr=0.000999, mean loss 3.059, total time 31.66
+epoch 4, val, mean loss 0.616, total time 5.38
+epoch 5 (phase 1), train, lr=0.000999, mean loss 3.204, total time 33.60
+epoch 5, val, mean loss 0.566, total time 5.43
+epoch 1 (phase 1), train, lr=0.001000, mean loss 3.491, total time 34.73
+epoch 1, val, mean loss 0.774, total time 5.54
+epoch 2 (phase 1), train, lr=0.001000, mean loss 3.283, total time 32.76
+epoch 2, val, mean loss 0.695, total time 5.43
+epoch 3 (phase 1), train, lr=0.001000, mean loss 3.300, total time 31.65
+epoch 3, val, mean loss 0.585, total time 5.33
+epoch 4 (phase 1), train, lr=0.000999, mean loss 3.158, total time 32.12
+epoch 4, val, mean loss 0.632, total time 5.31
+epoch 5 (phase 1), train, lr=0.000999, mean loss 3.084, total time 32.12
+epoch 5, val, mean loss 0.596, total time 5.44
+epoch 6 (phase 1), train, lr=0.000998, mean loss 3.013, total time 31.47
+epoch 6, val, mean loss 0.554, total time 5.27
+epoch 7 (phase 1), train, lr=0.000998, mean loss 3.072, total time 32.18
+epoch 7, val, mean loss 0.549, total time 5.47
+epoch 8 (phase 1), train, lr=0.000997, mean loss 3.140, total time 31.11
+epoch 8, val, mean loss 0.597, total time 5.50
+epoch 9 (phase 1), train, lr=0.000996, mean loss 3.278, total time 31.48
+epoch 9, val, mean loss 0.533, total time 5.37
+epoch 10 (phase 1), train, lr=0.000995, mean loss 3.104, total time 33.20
+epoch 10, val, mean loss 0.558, total time 5.47
+epoch 11 (phase 1), train, lr=0.000994, mean loss 3.075, total time 34.37
+epoch 11, val, mean loss 0.534, total time 5.46
+epoch 12 (phase 1), train, lr=0.000993, mean loss 3.524, total time 32.98
+epoch 12, val, mean loss 0.517, total time 5.32
+epoch 13 (phase 1), train, lr=0.000991, mean loss 3.083, total time 32.58
+epoch 13, val, mean loss 0.518, total time 5.47
+epoch 14 (phase 1), train, lr=0.000990, mean loss 3.274, total time 32.77
+epoch 14, val, mean loss 0.527, total time 5.60
+epoch 15 (phase 1), train, lr=0.000988, mean loss 3.274, total time 31.85
+epoch 15, val, mean loss 0.500, total time 5.36
+epoch 16 (phase 1), train, lr=0.000986, mean loss 3.066, total time 31.48
+epoch 16, val, mean loss 0.543, total time 5.42
+epoch 17 (phase 1), train, lr=0.000984, mean loss 3.011, total time 29.14
+epoch 17, val, mean loss 0.512, total time 5.35
+epoch 18 (phase 1), train, lr=0.000982, mean loss 2.981, total time 31.92
+epoch 18, val, mean loss 0.535, total time 5.28
+epoch 19 (phase 1), train, lr=0.000980, mean loss 2.865, total time 31.57
+epoch 19, val, mean loss 0.512, total time 5.51
+epoch 20 (phase 1), train, lr=0.000978, mean loss 3.194, total time 30.19
+epoch 20, val, mean loss 0.498, total time 5.47
+epoch 21 (phase 1), train, lr=0.000976, mean loss 2.771, total time 31.71
+epoch 21, val, mean loss 0.506, total time 4.90
+epoch 22 (phase 1), train, lr=0.000973, mean loss 2.958, total time 31.21
+epoch 22, val, mean loss 0.504, total time 5.38
+epoch 23 (phase 1), train, lr=0.000971, mean loss 3.200, total time 31.65
+epoch 23, val, mean loss 0.515, total time 5.40
+epoch 24 (phase 1), train, lr=0.000968, mean loss 3.314, total time 32.51
+epoch 24, val, mean loss 0.504, total time 5.43
+epoch 25 (phase 1), train, lr=0.000965, mean loss 3.022, total time 32.88
+epoch 25, val, mean loss 0.511, total time 5.40
+epoch 26 (phase 1), train, lr=0.000962, mean loss 3.096, total time 32.29
+epoch 26, val, mean loss 0.511, total time 5.16
+epoch 27 (phase 1), train, lr=0.000959, mean loss 3.310, total time 34.60
+epoch 27, val, mean loss 0.516, total time 5.34
+epoch 28 (phase 1), train, lr=0.000956, mean loss 3.032, total time 31.69
+epoch 28, val, mean loss 0.501, total time 4.96
+epoch 29 (phase 1), train, lr=0.000953, mean loss 3.035, total time 31.50
+epoch 29, val, mean loss 0.502, total time 5.38
+epoch 30 (phase 1), train, lr=0.000950, mean loss 3.055, total time 33.03
+epoch 30, val, mean loss 0.506, total time 5.18
+========  get student model iou (epoch 30)  ========:
+✅ Background IoU: 0.9906
+✅ Foreground IoU: 0.5716
+✅ Mean IoU (mIoU): 0.7811
+epoch 31 (phase 1), train, lr=0.000946, mean loss 3.000, total time 31.98
+epoch 31, val, mean loss 0.496, total time 5.33
+epoch 32 (phase 1), train, lr=0.000942, mean loss 2.928, total time 32.83
+epoch 32, val, mean loss 0.487, total time 5.41
+epoch 33 (phase 1), train, lr=0.000939, mean loss 2.978, total time 31.78
+epoch 33, val, mean loss 0.490, total time 5.34
+epoch 34 (phase 1), train, lr=0.000935, mean loss 3.092, total time 31.93
+epoch 34, val, mean loss 0.496, total time 5.41
+epoch 35 (phase 1), train, lr=0.000931, mean loss 2.931, total time 32.87
+epoch 35, val, mean loss 0.502, total time 5.36
+epoch 36 (phase 1), train, lr=0.000927, mean loss 3.027, total time 34.59
+epoch 36, val, mean loss 0.504, total time 5.33
+epoch 37 (phase 1), train, lr=0.000923, mean loss 3.051, total time 32.78
+epoch 37, val, mean loss 0.485, total time 5.31
+epoch 38 (phase 1), train, lr=0.000919, mean loss 3.079, total time 32.16
+epoch 38, val, mean loss 0.475, total time 5.11
+epoch 39 (phase 1), train, lr=0.000914, mean loss 3.052, total time 33.39
+epoch 39, val, mean loss 0.494, total time 5.41
+epoch 40 (phase 1), train, lr=0.000910, mean loss 2.986, total time 32.55
+epoch 40, val, mean loss 0.487, total time 5.20
+epoch 41 (phase 1), train, lr=0.000905, mean loss 3.304, total time 35.21
+epoch 41, val, mean loss 0.472, total time 5.36
+epoch 42 (phase 1), train, lr=0.000901, mean loss 2.866, total time 31.48
+epoch 42, val, mean loss 0.494, total time 5.40
+epoch 43 (phase 1), train, lr=0.000896, mean loss 2.907, total time 31.06
+epoch 43, val, mean loss 0.473, total time 5.31
+epoch 44 (phase 1), train, lr=0.000891, mean loss 2.960, total time 31.77
+epoch 44, val, mean loss 0.475, total time 5.49
+epoch 45 (phase 1), train, lr=0.000886, mean loss 3.134, total time 32.35
+epoch 45, val, mean loss 0.485, total time 5.40
+epoch 46 (phase 1), train, lr=0.000881, mean loss 2.877, total time 32.08
+epoch 46, val, mean loss 0.467, total time 5.59
+epoch 47 (phase 1), train, lr=0.000876, mean loss 3.241, total time 33.39
+epoch 47, val, mean loss 0.456, total time 5.14
+epoch 48 (phase 1), train, lr=0.000871, mean loss 3.012, total time 31.13
+epoch 48, val, mean loss 0.517, total time 5.39
+epoch 49 (phase 1), train, lr=0.000866, mean loss 2.769, total time 30.29
+epoch 49, val, mean loss 0.480, total time 5.27
+epoch 50 (phase 1), train, lr=0.000860, mean loss 2.915, total time 31.74
+epoch 50, val, mean loss 0.474, total time 5.42
+epoch 51 (phase 1), train, lr=0.000855, mean loss 2.855, total time 29.94
+epoch 51, val, mean loss 0.468, total time 5.34
+epoch 52 (phase 1), train, lr=0.000849, mean loss 2.761, total time 31.53
+epoch 52, val, mean loss 0.490, total time 5.41
+epoch 53 (phase 1), train, lr=0.000844, mean loss 2.917, total time 33.47
+epoch 53, val, mean loss 0.459, total time 5.52
+epoch 54 (phase 1), train, lr=0.000838, mean loss 2.872, total time 35.57
+epoch 54, val, mean loss 0.474, total time 5.54
+epoch 55 (phase 1), train, lr=0.000832, mean loss 2.777, total time 32.12
+epoch 55, val, mean loss 0.454, total time 5.48
+epoch 56 (phase 1), train, lr=0.000826, mean loss 2.753, total time 32.65
+epoch 56, val, mean loss 0.476, total time 5.46
+epoch 57 (phase 1), train, lr=0.000821, mean loss 3.002, total time 32.32
+epoch 57, val, mean loss 0.430, total time 5.35
+epoch 58 (phase 1), train, lr=0.000814, mean loss 2.937, total time 31.50
+epoch 58, val, mean loss 0.470, total time 5.39
+epoch 59 (phase 1), train, lr=0.000808, mean loss 3.007, total time 30.83
+epoch 59, val, mean loss 0.455, total time 5.38
+epoch 60 (phase 1), train, lr=0.000802, mean loss 2.691, total time 32.00
+epoch 60, val, mean loss 0.459, total time 5.35
+========  get student model iou (epoch 60)  ========:
+✅ Background IoU: 0.9919
+✅ Foreground IoU: 0.6182
+✅ Mean IoU (mIoU): 0.8051
+epoch 61 (phase 1), train, lr=0.000796, mean loss 2.760, total time 31.57
+epoch 61, val, mean loss 0.466, total time 5.49
+epoch 62 (phase 1), train, lr=0.000790, mean loss 2.803, total time 33.28
+epoch 62, val, mean loss 0.470, total time 5.41
+epoch 63 (phase 1), train, lr=0.000783, mean loss 2.704, total time 33.29
+epoch 63, val, mean loss 0.464, total time 5.33
+epoch 64 (phase 1), train, lr=0.000777, mean loss 2.991, total time 32.94
+epoch 64, val, mean loss 0.486, total time 5.24
+epoch 65 (phase 1), train, lr=0.000770, mean loss 3.033, total time 32.30
+epoch 65, val, mean loss 0.476, total time 5.34
+epoch 66 (phase 1), train, lr=0.000764, mean loss 2.983, total time 32.80
+epoch 66, val, mean loss 0.478, total time 5.39
+epoch 67 (phase 1), train, lr=0.000757, mean loss 3.002, total time 32.11
+epoch 67, val, mean loss 0.457, total time 5.38
+epoch 68 (phase 1), train, lr=0.000750, mean loss 2.984, total time 30.96
+epoch 68, val, mean loss 0.465, total time 5.41
+epoch 69 (phase 1), train, lr=0.000743, mean loss 2.673, total time 33.58
+epoch 69, val, mean loss 0.470, total time 5.45
+epoch 70 (phase 1), train, lr=0.000737, mean loss 2.844, total time 31.15
+epoch 70, val, mean loss 0.474, total time 5.40
+epoch 71 (phase 1), train, lr=0.000730, mean loss 2.755, total time 30.98
+epoch 71, val, mean loss 0.460, total time 5.36
+epoch 72 (phase 1), train, lr=0.000723, mean loss 2.935, total time 31.27
+epoch 72, val, mean loss 0.469, total time 5.02
+epoch 73 (phase 1), train, lr=0.000716, mean loss 3.051, total time 34.30
+epoch 73, val, mean loss 0.472, total time 5.04
+epoch 74 (phase 1), train, lr=0.000709, mean loss 2.903, total time 34.22
+epoch 74, val, mean loss 0.468, total time 5.25
+epoch 75 (phase 1), train, lr=0.000702, mean loss 2.737, total time 31.07
+epoch 75, val, mean loss 0.475, total time 5.49
+epoch 76 (phase 1), train, lr=0.000694, mean loss 2.771, total time 33.72
+epoch 76, val, mean loss 0.459, total time 5.20
+epoch 77 (phase 1), train, lr=0.000687, mean loss 3.011, total time 31.72
+epoch 77, val, mean loss 0.459, total time 5.35
+epoch 78 (phase 1), train, lr=0.000680, mean loss 2.794, total time 30.20
+epoch 78, val, mean loss 0.452, total time 5.53
+epoch 79 (phase 1), train, lr=0.000673, mean loss 2.884, total time 32.35
+epoch 79, val, mean loss 0.459, total time 5.61
+epoch 80 (phase 1), train, lr=0.000665, mean loss 3.059, total time 34.47
+epoch 80, val, mean loss 0.438, total time 5.44
+epoch 81 (phase 1), train, lr=0.000658, mean loss 2.964, total time 33.52
+epoch 81, val, mean loss 0.469, total time 5.52
+epoch 82 (phase 1), train, lr=0.000651, mean loss 3.024, total time 35.58
+epoch 82, val, mean loss 0.461, total time 5.36
+epoch 83 (phase 1), train, lr=0.000643, mean loss 2.933, total time 33.28
+epoch 83, val, mean loss 0.452, total time 5.32
+epoch 84 (phase 1), train, lr=0.000636, mean loss 2.810, total time 32.29
+epoch 84, val, mean loss 0.470, total time 5.37
+epoch 85 (phase 1), train, lr=0.000628, mean loss 2.757, total time 32.42
+epoch 85, val, mean loss 0.444, total time 5.43
+epoch 86 (phase 1), train, lr=0.000621, mean loss 2.799, total time 31.75
+epoch 86, val, mean loss 0.462, total time 5.03
+epoch 87 (phase 1), train, lr=0.000613, mean loss 2.787, total time 33.86
+epoch 87, val, mean loss 0.456, total time 5.34
+epoch 88 (phase 1), train, lr=0.000605, mean loss 2.751, total time 30.75
+epoch 88, val, mean loss 0.433, total time 5.25
+epoch 89 (phase 1), train, lr=0.000598, mean loss 2.802, total time 31.54
+epoch 89, val, mean loss 0.449, total time 5.33
+epoch 90 (phase 1), train, lr=0.000590, mean loss 2.743, total time 32.49
+epoch 90, val, mean loss 0.464, total time 5.21
+========  get student model iou (epoch 90)  ========:
+✅ Background IoU: 0.9920
+✅ Foreground IoU: 0.6134
+✅ Mean IoU (mIoU): 0.8027
+epoch 91 (phase 1), train, lr=0.000582, mean loss 3.041, total time 32.05
+epoch 91, val, mean loss 0.453, total time 5.30
+epoch 92 (phase 1), train, lr=0.000575, mean loss 2.649, total time 30.93
+epoch 92, val, mean loss 0.457, total time 5.48
+epoch 93 (phase 1), train, lr=0.000567, mean loss 3.025, total time 31.05
+epoch 93, val, mean loss 0.457, total time 5.35
+epoch 94 (phase 1), train, lr=0.000559, mean loss 2.728, total time 32.09
+epoch 94, val, mean loss 0.462, total time 5.51
+epoch 95 (phase 1), train, lr=0.000552, mean loss 2.813, total time 32.06
+epoch 95, val, mean loss 0.441, total time 5.23
+epoch 96 (phase 1), train, lr=0.000544, mean loss 2.772, total time 32.48
+epoch 96, val, mean loss 0.464, total time 5.28
+epoch 97 (phase 1), train, lr=0.000536, mean loss 3.046, total time 33.30
+epoch 97, val, mean loss 0.459, total time 5.33
+epoch 98 (phase 1), train, lr=0.000528, mean loss 2.685, total time 34.06
+epoch 98, val, mean loss 0.479, total time 5.34
+epoch 99 (phase 1), train, lr=0.000521, mean loss 2.842, total time 32.48
+epoch 99, val, mean loss 0.448, total time 5.08
+epoch 100 (phase 1), train, lr=0.000513, mean loss 2.751, total time 32.04
+epoch 100, val, mean loss 0.471, total time 5.36
+epoch 101 (phase 1), train, lr=0.000505, mean loss 3.068, total time 31.36
+epoch 101, val, mean loss 0.460, total time 5.30
+epoch 102 (phase 1), train, lr=0.000497, mean loss 2.966, total time 31.32
+epoch 102, val, mean loss 0.473, total time 5.32
+epoch 103 (phase 1), train, lr=0.000489, mean loss 3.067, total time 34.25
+epoch 103, val, mean loss 0.490, total time 5.41
+epoch 104 (phase 1), train, lr=0.000482, mean loss 3.034, total time 32.41
+epoch 104, val, mean loss 0.465, total time 5.31
+epoch 105 (phase 1), train, lr=0.000474, mean loss 2.899, total time 32.15
+epoch 105, val, mean loss 0.463, total time 5.36
+epoch 106 (phase 1), train, lr=0.000466, mean loss 2.943, total time 31.43
+epoch 106, val, mean loss 0.462, total time 5.42
+epoch 107 (phase 1), train, lr=0.000458, mean loss 2.919, total time 32.61
+epoch 107, val, mean loss 0.445, total time 5.47
+epoch 108 (phase 1), train, lr=0.000451, mean loss 2.800, total time 34.62
+epoch 108, val, mean loss 0.462, total time 5.58
+epoch 109 (phase 1), train, lr=0.000443, mean loss 3.165, total time 31.40
+epoch 109, val, mean loss 0.469, total time 5.59
+epoch 110 (phase 1), train, lr=0.000435, mean loss 2.619, total time 30.39
+epoch 110, val, mean loss 0.471, total time 5.34
+epoch 111 (phase 1), train, lr=0.000428, mean loss 2.642, total time 32.14
+epoch 111, val, mean loss 0.457, total time 5.45
+epoch 112 (phase 1), train, lr=0.000420, mean loss 3.125, total time 31.03
+epoch 112, val, mean loss 0.458, total time 5.52
+epoch 113 (phase 1), train, lr=0.000412, mean loss 2.815, total time 33.83
+epoch 113, val, mean loss 0.464, total time 5.34
+epoch 114 (phase 1), train, lr=0.000405, mean loss 2.654, total time 31.07
+epoch 114, val, mean loss 0.448, total time 5.17
+epoch 115 (phase 1), train, lr=0.000397, mean loss 2.996, total time 31.19
+epoch 115, val, mean loss 0.445, total time 5.35
+epoch 116 (phase 1), train, lr=0.000389, mean loss 2.706, total time 32.76
+epoch 116, val, mean loss 0.473, total time 5.45
+epoch 117 (phase 1), train, lr=0.000382, mean loss 2.762, total time 32.64
+epoch 117, val, mean loss 0.461, total time 5.30
+epoch 118 (phase 1), train, lr=0.000374, mean loss 2.795, total time 29.72
+epoch 118, val, mean loss 0.459, total time 5.35
+epoch 119 (phase 1), train, lr=0.000367, mean loss 2.806, total time 33.07
+epoch 119, val, mean loss 0.443, total time 5.16
+epoch 120 (phase 1), train, lr=0.000359, mean loss 2.833, total time 32.41
+epoch 120, val, mean loss 0.451, total time 5.50
+========  get student model iou (epoch 120)  ========:
+✅ Background IoU: 0.9921
+✅ Foreground IoU: 0.6255
+✅ Mean IoU (mIoU): 0.8088
+epoch 121 (phase 1), train, lr=0.000352, mean loss 2.900, total time 30.82
+epoch 121, val, mean loss 0.455, total time 5.41
+epoch 122 (phase 1), train, lr=0.000345, mean loss 2.935, total time 31.53
+epoch 122, val, mean loss 0.454, total time 5.56
+epoch 123 (phase 1), train, lr=0.000337, mean loss 2.674, total time 33.29
+epoch 123, val, mean loss 0.456, total time 5.40
+epoch 124 (phase 1), train, lr=0.000330, mean loss 2.552, total time 33.70
+epoch 124, val, mean loss 0.457, total time 5.13
+epoch 125 (phase 1), train, lr=0.000323, mean loss 2.891, total time 31.68
+epoch 125, val, mean loss 0.450, total time 5.44
+epoch 126 (phase 1), train, lr=0.000316, mean loss 2.984, total time 32.31
+epoch 126, val, mean loss 0.462, total time 5.23
+epoch 127 (phase 1), train, lr=0.000308, mean loss 2.866, total time 34.90
+epoch 127, val, mean loss 0.453, total time 5.40
+epoch 128 (phase 1), train, lr=0.000301, mean loss 2.886, total time 31.68
+epoch 128, val, mean loss 0.454, total time 5.33
+epoch 129 (phase 1), train, lr=0.000294, mean loss 2.928, total time 33.17
+epoch 129, val, mean loss 0.441, total time 5.41
+epoch 130 (phase 1), train, lr=0.000287, mean loss 2.738, total time 31.91
+epoch 130, val, mean loss 0.459, total time 5.40
+epoch 131 (phase 1), train, lr=0.000280, mean loss 2.698, total time 31.04
+epoch 131, val, mean loss 0.439, total time 5.16
+epoch 132 (phase 1), train, lr=0.000273, mean loss 2.541, total time 32.49
+epoch 132, val, mean loss 0.440, total time 5.52
+epoch 133 (phase 1), train, lr=0.000267, mean loss 2.750, total time 32.77
+epoch 133, val, mean loss 0.434, total time 5.39
+epoch 134 (phase 1), train, lr=0.000260, mean loss 2.844, total time 31.89
+epoch 134, val, mean loss 0.446, total time 5.31
+epoch 135 (phase 1), train, lr=0.000253, mean loss 2.733, total time 32.43
+epoch 135, val, mean loss 0.456, total time 5.17
+epoch 136 (phase 1), train, lr=0.000246, mean loss 2.603, total time 31.12
+epoch 136, val, mean loss 0.445, total time 5.39
+epoch 137 (phase 1), train, lr=0.000240, mean loss 2.658, total time 34.39
+epoch 137, val, mean loss 0.444, total time 5.37
+epoch 138 (phase 1), train, lr=0.000233, mean loss 2.677, total time 31.94
+epoch 138, val, mean loss 0.448, total time 5.31
+epoch 139 (phase 1), train, lr=0.000227, mean loss 2.960, total time 32.58
+epoch 139, val, mean loss 0.449, total time 5.45
+epoch 140 (phase 1), train, lr=0.000220, mean loss 2.809, total time 33.28
+epoch 140, val, mean loss 0.449, total time 5.26
+epoch 141 (phase 1), train, lr=0.000214, mean loss 2.734, total time 31.78
+epoch 141, val, mean loss 0.447, total time 5.24
+epoch 142 (phase 1), train, lr=0.000208, mean loss 2.829, total time 31.96
+epoch 142, val, mean loss 0.447, total time 5.29
+epoch 143 (phase 1), train, lr=0.000202, mean loss 2.874, total time 31.84
+epoch 143, val, mean loss 0.436, total time 5.34
+epoch 144 (phase 1), train, lr=0.000196, mean loss 2.955, total time 35.94
+epoch 144, val, mean loss 0.448, total time 5.48
+epoch 145 (phase 1), train, lr=0.000189, mean loss 2.698, total time 31.95
+epoch 145, val, mean loss 0.446, total time 5.47
+epoch 146 (phase 1), train, lr=0.000184, mean loss 2.942, total time 32.89
+epoch 146, val, mean loss 0.444, total time 5.40
+epoch 147 (phase 1), train, lr=0.000178, mean loss 2.699, total time 32.55
+epoch 147, val, mean loss 0.440, total time 5.19
+epoch 148 (phase 1), train, lr=0.000172, mean loss 2.572, total time 32.90
+epoch 148, val, mean loss 0.449, total time 5.42
+epoch 149 (phase 1), train, lr=0.000166, mean loss 2.778, total time 33.50
+epoch 149, val, mean loss 0.423, total time 5.46
+epoch 150 (phase 1), train, lr=0.000161, mean loss 2.659, total time 32.40
+epoch 150, val, mean loss 0.430, total time 5.48
+========  get student model iou (epoch 150)  ========:
+✅ Background IoU: 0.9922
+✅ Foreground IoU: 0.6385
+✅ Mean IoU (mIoU): 0.8154
+epoch 151 (phase 1), train, lr=0.000155, mean loss 2.814, total time 31.57
+epoch 151, val, mean loss 0.434, total time 5.46
+epoch 152 (phase 1), train, lr=0.000150, mean loss 2.878, total time 31.03
+epoch 152, val, mean loss 0.431, total time 5.62
+epoch 153 (phase 1), train, lr=0.000144, mean loss 2.766, total time 31.77
+epoch 153, val, mean loss 0.427, total time 5.40
+epoch 154 (phase 1), train, lr=0.000139, mean loss 2.937, total time 30.93
+epoch 154, val, mean loss 0.445, total time 5.33
+epoch 155 (phase 1), train, lr=0.000134, mean loss 2.601, total time 31.58
+epoch 155, val, mean loss 0.430, total time 5.50
+epoch 156 (phase 1), train, lr=0.000129, mean loss 2.771, total time 31.17
+epoch 156, val, mean loss 0.441, total time 5.51
+epoch 157 (phase 1), train, lr=0.000124, mean loss 2.726, total time 34.04
+epoch 157, val, mean loss 0.433, total time 5.39
+epoch 158 (phase 1), train, lr=0.000119, mean loss 2.771, total time 31.37
+epoch 158, val, mean loss 0.444, total time 5.24
+epoch 159 (phase 1), train, lr=0.000114, mean loss 2.841, total time 32.51
+epoch 159, val, mean loss 0.439, total time 5.43
+epoch 160 (phase 1), train, lr=0.000109, mean loss 2.719, total time 32.15
+epoch 160, val, mean loss 0.444, total time 5.54
+epoch 161 (phase 1), train, lr=0.000105, mean loss 2.830, total time 33.48
+epoch 161, val, mean loss 0.441, total time 5.55
+epoch 162 (phase 1), train, lr=0.000100, mean loss 2.719, total time 34.27
+epoch 162, val, mean loss 0.441, total time 5.54
+epoch 163 (phase 1), train, lr=0.000096, mean loss 2.934, total time 31.12
+epoch 163, val, mean loss 0.429, total time 5.45
+epoch 164 (phase 1), train, lr=0.000091, mean loss 2.975, total time 30.75
+epoch 164, val, mean loss 0.431, total time 5.30
+epoch 165 (phase 1), train, lr=0.000087, mean loss 2.768, total time 33.71
+epoch 165, val, mean loss 0.425, total time 5.53
+epoch 166 (phase 1), train, lr=0.000083, mean loss 2.603, total time 31.67
+epoch 166, val, mean loss 0.440, total time 5.24
+epoch 167 (phase 1), train, lr=0.000079, mean loss 2.723, total time 31.01
+epoch 167, val, mean loss 0.438, total time 5.44
+epoch 168 (phase 1), train, lr=0.000075, mean loss 2.901, total time 31.03
+epoch 168, val, mean loss 0.438, total time 5.48
+epoch 169 (phase 1), train, lr=0.000071, mean loss 2.667, total time 34.11
+epoch 169, val, mean loss 0.444, total time 5.37
+epoch 170 (phase 1), train, lr=0.000068, mean loss 2.653, total time 31.45
+epoch 170, val, mean loss 0.436, total time 5.29
+epoch 171 (phase 1), train, lr=0.000064, mean loss 2.820, total time 32.43
+epoch 171, val, mean loss 0.445, total time 5.53
+epoch 172 (phase 1), train, lr=0.000060, mean loss 2.984, total time 31.80
+epoch 172, val, mean loss 0.446, total time 5.26
+epoch 173 (phase 1), train, lr=0.000057, mean loss 2.779, total time 32.90
+epoch 173, val, mean loss 0.444, total time 5.35
+epoch 174 (phase 1), train, lr=0.000054, mean loss 2.718, total time 33.40
+epoch 174, val, mean loss 0.448, total time 5.30
+epoch 175 (phase 1), train, lr=0.000051, mean loss 2.735, total time 32.28
+epoch 175, val, mean loss 0.432, total time 5.18
+epoch 176 (phase 1), train, lr=0.000048, mean loss 2.770, total time 32.73
+epoch 176, val, mean loss 0.443, total time 5.06
+epoch 177 (phase 1), train, lr=0.000045, mean loss 2.690, total time 32.77
+epoch 177, val, mean loss 0.455, total time 5.49
+epoch 178 (phase 1), train, lr=0.000042, mean loss 2.797, total time 33.97
+epoch 178, val, mean loss 0.446, total time 5.53
+epoch 179 (phase 1), train, lr=0.000039, mean loss 2.797, total time 32.48
+epoch 179, val, mean loss 0.440, total time 5.42
+epoch 180 (phase 1), train, lr=0.000037, mean loss 2.904, total time 32.63
+epoch 180, val, mean loss 0.442, total time 5.39
+========  get student model iou (epoch 180)  ========:
+✅ Background IoU: 0.9920
+✅ Foreground IoU: 0.6319
+✅ Mean IoU (mIoU): 0.8119
+epoch 181 (phase 1), train, lr=0.000034, mean loss 3.070, total time 34.33
+epoch 181, val, mean loss 0.430, total time 5.43
+epoch 182 (phase 1), train, lr=0.000032, mean loss 2.683, total time 33.90
+epoch 182, val, mean loss 0.435, total time 5.32
+epoch 183 (phase 1), train, lr=0.000030, mean loss 2.974, total time 31.75
+epoch 183, val, mean loss 0.439, total time 5.38
+epoch 184 (phase 1), train, lr=0.000028, mean loss 2.665, total time 32.38
+epoch 184, val, mean loss 0.427, total time 5.26
+epoch 185 (phase 1), train, lr=0.000026, mean loss 2.481, total time 33.09
+epoch 185, val, mean loss 0.438, total time 5.45
+epoch 186 (phase 1), train, lr=0.000024, mean loss 3.156, total time 33.30
+epoch 186, val, mean loss 0.439, total time 5.46
+epoch 187 (phase 1), train, lr=0.000022, mean loss 2.791, total time 31.97
+epoch 187, val, mean loss 0.443, total time 5.18
+epoch 188 (phase 1), train, lr=0.000020, mean loss 2.736, total time 32.03
+epoch 188, val, mean loss 0.445, total time 5.44
+epoch 189 (phase 1), train, lr=0.000019, mean loss 2.776, total time 32.88
+epoch 189, val, mean loss 0.432, total time 5.37
+epoch 190 (phase 1), train, lr=0.000017, mean loss 2.950, total time 31.41
+epoch 190, val, mean loss 0.443, total time 5.34
+epoch 191 (phase 1), train, lr=0.000016, mean loss 2.706, total time 34.02
+epoch 191, val, mean loss 0.443, total time 5.31
+epoch 192 (phase 1), train, lr=0.000015, mean loss 2.678, total time 32.35
+epoch 192, val, mean loss 0.438, total time 5.44
+epoch 193 (phase 1), train, lr=0.000014, mean loss 2.903, total time 32.30
+epoch 193, val, mean loss 0.442, total time 5.34
+epoch 194 (phase 1), train, lr=0.000013, mean loss 2.838, total time 32.70
+epoch 194, val, mean loss 0.428, total time 5.25
+epoch 195 (phase 1), train, lr=0.000012, mean loss 2.939, total time 31.62
+epoch 195, val, mean loss 0.439, total time 5.48
+epoch 196 (phase 1), train, lr=0.000012, mean loss 3.142, total time 32.14
+epoch 196, val, mean loss 0.440, total time 5.37
+epoch 197 (phase 1), train, lr=0.000011, mean loss 2.775, total time 32.18
+epoch 197, val, mean loss 0.438, total time 5.39
+epoch 198 (phase 1), train, lr=0.000011, mean loss 2.646, total time 30.36
+epoch 198, val, mean loss 0.441, total time 5.41
+epoch 199 (phase 1), train, lr=0.000010, mean loss 2.847, total time 31.48
+epoch 199, val, mean loss 0.441, total time 5.47
+epoch 200 (phase 1), train, lr=0.000010, mean loss 2.860, total time 32.52
+epoch 200, val, mean loss 0.443, total time 5.47
+==== Switched to Phase-2 optimizer/scheduler (epoch 201) ====
+epoch 201 (phase 2), train, lr=0.000100, mean loss 2.768, total time 31.47
+epoch 201, val, mean loss 0.452, total time 5.50
+epoch 202 (phase 2), train, lr=0.000100, mean loss 2.785, total time 32.00
+epoch 202, val, mean loss 0.434, total time 5.41
+epoch 203 (phase 2), train, lr=0.000100, mean loss 2.788, total time 33.01
+epoch 203, val, mean loss 0.432, total time 5.31
+epoch 204 (phase 2), train, lr=0.000099, mean loss 2.826, total time 32.83
+epoch 204, val, mean loss 0.447, total time 5.53
+epoch 205 (phase 2), train, lr=0.000098, mean loss 2.733, total time 32.24
+epoch 205, val, mean loss 0.438, total time 5.42
+epoch 206 (phase 2), train, lr=0.000098, mean loss 2.738, total time 32.87
+epoch 206, val, mean loss 0.440, total time 5.30
+epoch 207 (phase 2), train, lr=0.000097, mean loss 2.973, total time 32.76
+epoch 207, val, mean loss 0.429, total time 5.37
+epoch 208 (phase 2), train, lr=0.000095, mean loss 2.818, total time 31.08
+epoch 208, val, mean loss 0.442, total time 5.17
+epoch 209 (phase 2), train, lr=0.000094, mean loss 3.172, total time 33.46
+epoch 209, val, mean loss 0.424, total time 5.40
+epoch 210 (phase 2), train, lr=0.000092, mean loss 2.746, total time 29.84
+epoch 210, val, mean loss 0.433, total time 5.38
+========  get student model iou (epoch 210)  ========:
+✅ Background IoU: 0.9923
+✅ Foreground IoU: 0.6361
+✅ Mean IoU (mIoU): 0.8142
+epoch 211 (phase 2), train, lr=0.000091, mean loss 2.681, total time 31.93
+epoch 211, val, mean loss 0.437, total time 5.25
+epoch 212 (phase 2), train, lr=0.000089, mean loss 2.856, total time 33.62
+epoch 212, val, mean loss 0.437, total time 5.39
+epoch 213 (phase 2), train, lr=0.000087, mean loss 2.744, total time 32.22
+epoch 213, val, mean loss 0.437, total time 5.39
+epoch 214 (phase 2), train, lr=0.000084, mean loss 2.714, total time 31.89
+epoch 214, val, mean loss 0.435, total time 5.45
+epoch 215 (phase 2), train, lr=0.000082, mean loss 2.851, total time 29.70
+epoch 215, val, mean loss 0.439, total time 5.25
+epoch 216 (phase 2), train, lr=0.000080, mean loss 3.081, total time 32.90
+epoch 216, val, mean loss 0.437, total time 5.55
+epoch 217 (phase 2), train, lr=0.000077, mean loss 2.862, total time 31.50
+epoch 217, val, mean loss 0.443, total time 5.49
+epoch 218 (phase 2), train, lr=0.000074, mean loss 2.939, total time 29.83
+epoch 218, val, mean loss 0.440, total time 5.36
+epoch 219 (phase 2), train, lr=0.000072, mean loss 2.646, total time 31.22
+epoch 219, val, mean loss 0.433, total time 5.42
+epoch 220 (phase 2), train, lr=0.000069, mean loss 2.619, total time 30.90
+epoch 220, val, mean loss 0.433, total time 5.36
+epoch 221 (phase 2), train, lr=0.000066, mean loss 3.120, total time 29.53
+epoch 221, val, mean loss 0.437, total time 5.32
+epoch 222 (phase 2), train, lr=0.000063, mean loss 3.048, total time 33.99
+epoch 222, val, mean loss 0.442, total time 5.34
+epoch 223 (phase 2), train, lr=0.000060, mean loss 2.609, total time 32.59
+epoch 223, val, mean loss 0.438, total time 5.48
+epoch 224 (phase 2), train, lr=0.000057, mean loss 2.722, total time 37.26
+epoch 224, val, mean loss 0.444, total time 5.36
+epoch 225 (phase 2), train, lr=0.000054, mean loss 2.886, total time 32.21
+epoch 225, val, mean loss 0.437, total time 5.45
+epoch 226 (phase 2), train, lr=0.000050, mean loss 2.749, total time 32.40
+epoch 226, val, mean loss 0.455, total time 5.24
+epoch 227 (phase 2), train, lr=0.000047, mean loss 2.903, total time 31.13
+epoch 227, val, mean loss 0.433, total time 5.16
+epoch 228 (phase 2), train, lr=0.000044, mean loss 2.648, total time 32.41
+epoch 228, val, mean loss 0.429, total time 5.22
+epoch 229 (phase 2), train, lr=0.000041, mean loss 2.835, total time 33.36
+epoch 229, val, mean loss 0.433, total time 5.35
+epoch 230 (phase 2), train, lr=0.000038, mean loss 2.630, total time 32.57
+epoch 230, val, mean loss 0.441, total time 5.39
+epoch 231 (phase 2), train, lr=0.000035, mean loss 2.640, total time 32.35
+epoch 231, val, mean loss 0.439, total time 5.35
+epoch 232 (phase 2), train, lr=0.000032, mean loss 2.658, total time 34.68
+epoch 232, val, mean loss 0.443, total time 5.44
+epoch 233 (phase 2), train, lr=0.000029, mean loss 2.636, total time 31.67
+epoch 233, val, mean loss 0.441, total time 5.42
+epoch 234 (phase 2), train, lr=0.000027, mean loss 2.958, total time 33.83
+epoch 234, val, mean loss 0.443, total time 5.27
+epoch 235 (phase 2), train, lr=0.000024, mean loss 2.950, total time 31.70
+epoch 235, val, mean loss 0.448, total time 5.60
+epoch 236 (phase 2), train, lr=0.000021, mean loss 2.764, total time 31.37
+epoch 236, val, mean loss 0.439, total time 5.28
+epoch 237 (phase 2), train, lr=0.000019, mean loss 2.691, total time 32.04
+epoch 237, val, mean loss 0.441, total time 5.28
+epoch 238 (phase 2), train, lr=0.000017, mean loss 2.712, total time 32.22
+epoch 238, val, mean loss 0.446, total time 5.29
+epoch 239 (phase 2), train, lr=0.000014, mean loss 2.724, total time 33.88
+epoch 239, val, mean loss 0.435, total time 5.50
+epoch 240 (phase 2), train, lr=0.000012, mean loss 2.573, total time 33.27
+epoch 240, val, mean loss 0.435, total time 5.47
+========  get student model iou (epoch 240)  ========:
+✅ Background IoU: 0.9923
+✅ Foreground IoU: 0.6358
+✅ Mean IoU (mIoU): 0.8140
+epoch 241 (phase 2), train, lr=0.000010, mean loss 2.630, total time 31.20
+epoch 241, val, mean loss 0.433, total time 5.35
+epoch 242 (phase 2), train, lr=0.000009, mean loss 2.670, total time 31.20
+epoch 242, val, mean loss 0.446, total time 5.47
+epoch 243 (phase 2), train, lr=0.000007, mean loss 2.792, total time 31.16
+epoch 243, val, mean loss 0.441, total time 5.42
+epoch 244 (phase 2), train, lr=0.000006, mean loss 2.756, total time 31.44
+epoch 244, val, mean loss 0.437, total time 5.47
+epoch 245 (phase 2), train, lr=0.000004, mean loss 2.580, total time 30.97
+epoch 245, val, mean loss 0.440, total time 5.36
+epoch 246 (phase 2), train, lr=0.000003, mean loss 2.683, total time 32.62
+epoch 246, val, mean loss 0.439, total time 5.42
+epoch 247 (phase 2), train, lr=0.000003, mean loss 2.886, total time 36.48
+epoch 247, val, mean loss 0.432, total time 5.46
+epoch 248 (phase 2), train, lr=0.000002, mean loss 2.647, total time 32.45
+epoch 248, val, mean loss 0.437, total time 5.24
+epoch 249 (phase 2), train, lr=0.000001, mean loss 2.998, total time 32.10
+epoch 249, val, mean loss 0.442, total time 5.44
+epoch 250 (phase 2), train, lr=0.000001, mean loss 3.245, total time 31.05
+epoch 250, val, mean loss 0.438, total time 5.32
+epoch 251 (phase 2), train, lr=0.000001, mean loss 2.758, total time 32.00
+epoch 251, val, mean loss 0.439, total time 5.41
+epoch 252 (phase 2), train, lr=0.000001, mean loss 2.924, total time 30.68
+epoch 252, val, mean loss 0.436, total time 5.45
+epoch 253 (phase 2), train, lr=0.000001, mean loss 2.967, total time 32.24
+epoch 253, val, mean loss 0.440, total time 5.43
+epoch 254 (phase 2), train, lr=0.000002, mean loss 2.712, total time 30.33
+epoch 254, val, mean loss 0.441, total time 5.18
+epoch 255 (phase 2), train, lr=0.000003, mean loss 3.150, total time 33.65
+epoch 255, val, mean loss 0.451, total time 5.66
+epoch 256 (phase 2), train, lr=0.000003, mean loss 2.637, total time 31.00
+epoch 256, val, mean loss 0.443, total time 5.49
+epoch 257 (phase 2), train, lr=0.000004, mean loss 2.841, total time 30.69
+epoch 257, val, mean loss 0.437, total time 5.25
+epoch 258 (phase 2), train, lr=0.000006, mean loss 2.739, total time 33.89
+epoch 258, val, mean loss 0.445, total time 5.47
+epoch 259 (phase 2), train, lr=0.000007, mean loss 2.927, total time 34.42
+epoch 259, val, mean loss 0.443, total time 5.35
+epoch 260 (phase 2), train, lr=0.000009, mean loss 2.876, total time 34.50
+epoch 260, val, mean loss 0.439, total time 5.28
+epoch 261 (phase 2), train, lr=0.000010, mean loss 2.999, total time 30.63
+epoch 261, val, mean loss 0.434, total time 5.28
+epoch 262 (phase 2), train, lr=0.000012, mean loss 2.733, total time 33.19
+epoch 262, val, mean loss 0.440, total time 5.36
+epoch 263 (phase 2), train, lr=0.000014, mean loss 2.942, total time 32.69
+epoch 263, val, mean loss 0.448, total time 4.98
+epoch 264 (phase 2), train, lr=0.000017, mean loss 3.040, total time 32.21
+epoch 264, val, mean loss 0.429, total time 5.27
+epoch 265 (phase 2), train, lr=0.000019, mean loss 2.822, total time 33.35
+epoch 265, val, mean loss 0.439, total time 5.37
+epoch 266 (phase 2), train, lr=0.000021, mean loss 2.837, total time 31.89
+epoch 266, val, mean loss 0.452, total time 5.33
+epoch 267 (phase 2), train, lr=0.000024, mean loss 2.867, total time 33.08
+epoch 267, val, mean loss 0.445, total time 5.44
+epoch 268 (phase 2), train, lr=0.000027, mean loss 2.843, total time 32.57
+epoch 268, val, mean loss 0.449, total time 5.30
+epoch 269 (phase 2), train, lr=0.000029, mean loss 2.648, total time 32.78
+epoch 269, val, mean loss 0.433, total time 5.51
+epoch 270 (phase 2), train, lr=0.000032, mean loss 2.789, total time 33.87
+epoch 270, val, mean loss 0.438, total time 5.44
+========  get student model iou (epoch 270)  ========:
+✅ Background IoU: 0.9922
+✅ Foreground IoU: 0.6343
+✅ Mean IoU (mIoU): 0.8133
+epoch 271 (phase 2), train, lr=0.000035, mean loss 2.795, total time 31.19
+epoch 271, val, mean loss 0.433, total time 5.29
+epoch 272 (phase 2), train, lr=0.000038, mean loss 2.932, total time 30.93
+epoch 272, val, mean loss 0.435, total time 5.41
+epoch 273 (phase 2), train, lr=0.000041, mean loss 3.004, total time 31.40
+epoch 273, val, mean loss 0.443, total time 5.36
+epoch 274 (phase 2), train, lr=0.000044, mean loss 2.966, total time 32.50
+epoch 274, val, mean loss 0.437, total time 5.33
+epoch 275 (phase 2), train, lr=0.000047, mean loss 2.691, total time 30.83
+epoch 275, val, mean loss 0.432, total time 5.36
+epoch 276 (phase 2), train, lr=0.000050, mean loss 2.764, total time 32.85
+epoch 276, val, mean loss 0.434, total time 5.30
+epoch 277 (phase 2), train, lr=0.000054, mean loss 2.933, total time 32.36
+epoch 277, val, mean loss 0.439, total time 5.34
+epoch 278 (phase 2), train, lr=0.000057, mean loss 3.147, total time 32.75
+epoch 278, val, mean loss 0.443, total time 5.44
+epoch 279 (phase 2), train, lr=0.000060, mean loss 2.719, total time 32.70
+epoch 279, val, mean loss 0.447, total time 5.33
+epoch 280 (phase 2), train, lr=0.000063, mean loss 2.777, total time 32.19
+epoch 280, val, mean loss 0.453, total time 5.33
+epoch 281 (phase 2), train, lr=0.000066, mean loss 2.775, total time 32.96
+epoch 281, val, mean loss 0.440, total time 5.45
+epoch 282 (phase 2), train, lr=0.000069, mean loss 2.943, total time 33.58
+epoch 282, val, mean loss 0.438, total time 5.19
+epoch 283 (phase 2), train, lr=0.000072, mean loss 2.782, total time 31.33
+epoch 283, val, mean loss 0.436, total time 5.45
+epoch 284 (phase 2), train, lr=0.000074, mean loss 2.829, total time 31.71
+epoch 284, val, mean loss 0.444, total time 5.36
+epoch 285 (phase 2), train, lr=0.000077, mean loss 2.846, total time 31.20
+epoch 285, val, mean loss 0.440, total time 5.39
+epoch 286 (phase 2), train, lr=0.000080, mean loss 2.940, total time 32.35
+epoch 286, val, mean loss 0.443, total time 5.32
+epoch 287 (phase 2), train, lr=0.000082, mean loss 2.808, total time 32.89
+epoch 287, val, mean loss 0.447, total time 5.45
+epoch 288 (phase 2), train, lr=0.000084, mean loss 2.759, total time 35.58
+epoch 288, val, mean loss 0.438, total time 5.38
+epoch 289 (phase 2), train, lr=0.000087, mean loss 2.672, total time 32.75
+epoch 289, val, mean loss 0.430, total time 5.39
+epoch 290 (phase 2), train, lr=0.000089, mean loss 2.850, total time 32.21
+epoch 290, val, mean loss 0.430, total time 5.28
+epoch 291 (phase 2), train, lr=0.000091, mean loss 2.688, total time 30.95
+epoch 291, val, mean loss 0.450, total time 5.42
+epoch 292 (phase 2), train, lr=0.000092, mean loss 2.642, total time 32.66
+epoch 292, val, mean loss 0.444, total time 5.44
+epoch 293 (phase 2), train, lr=0.000094, mean loss 2.908, total time 31.71
+epoch 293, val, mean loss 0.442, total time 5.26
+epoch 294 (phase 2), train, lr=0.000095, mean loss 2.734, total time 32.43
+epoch 294, val, mean loss 0.436, total time 5.41
+epoch 295 (phase 2), train, lr=0.000097, mean loss 2.652, total time 33.37
+epoch 295, val, mean loss 0.434, total time 5.38
+epoch 296 (phase 2), train, lr=0.000098, mean loss 2.703, total time 32.08
+epoch 296, val, mean loss 0.438, total time 5.49
+epoch 297 (phase 2), train, lr=0.000098, mean loss 2.748, total time 33.48
+epoch 297, val, mean loss 0.432, total time 5.31
+epoch 298 (phase 2), train, lr=0.000099, mean loss 3.105, total time 33.72
+epoch 298, val, mean loss 0.443, total time 5.43
+epoch 299 (phase 2), train, lr=0.000100, mean loss 2.822, total time 33.08
+epoch 299, val, mean loss 0.428, total time 5.07
+epoch 300 (phase 2), train, lr=0.000100, mean loss 2.773, total time 32.32
+epoch 300, val, mean loss 0.433, total time 5.30
+========  get student model iou (epoch 300)  ========:
+✅ Background IoU: 0.9921
+✅ Foreground IoU: 0.6385
+✅ Mean IoU (mIoU): 0.8153
+epoch 301 (phase 2), train, lr=0.000100, mean loss 2.922, total time 31.13
+epoch 301, val, mean loss 0.435, total time 5.38
+epoch 302 (phase 2), train, lr=0.000100, mean loss 2.904, total time 30.53
+epoch 302, val, mean loss 0.434, total time 5.41
+epoch 303 (phase 2), train, lr=0.000100, mean loss 2.891, total time 33.63
+epoch 303, val, mean loss 0.442, total time 5.48
+epoch 304 (phase 2), train, lr=0.000099, mean loss 2.716, total time 32.37
+epoch 304, val, mean loss 0.427, total time 5.37
+epoch 305 (phase 2), train, lr=0.000098, mean loss 2.797, total time 32.97
+epoch 305, val, mean loss 0.437, total time 5.38
+epoch 306 (phase 2), train, lr=0.000098, mean loss 2.801, total time 33.90
+epoch 306, val, mean loss 0.434, total time 5.36
+epoch 307 (phase 2), train, lr=0.000097, mean loss 2.812, total time 32.69
+epoch 307, val, mean loss 0.439, total time 5.53
+epoch 308 (phase 2), train, lr=0.000095, mean loss 3.053, total time 32.10
+epoch 308, val, mean loss 0.444, total time 5.42
+epoch 309 (phase 2), train, lr=0.000094, mean loss 2.864, total time 29.77
+epoch 309, val, mean loss 0.452, total time 5.25
+epoch 310 (phase 2), train, lr=0.000092, mean loss 2.647, total time 32.20
+epoch 310, val, mean loss 0.446, total time 5.39
+epoch 311 (phase 2), train, lr=0.000091, mean loss 2.664, total time 32.31
+epoch 311, val, mean loss 0.453, total time 5.08
+epoch 312 (phase 2), train, lr=0.000089, mean loss 2.698, total time 32.83
+epoch 312, val, mean loss 0.438, total time 5.39
+epoch 313 (phase 2), train, lr=0.000087, mean loss 3.159, total time 30.81
+epoch 313, val, mean loss 0.445, total time 5.40
+epoch 314 (phase 2), train, lr=0.000084, mean loss 2.911, total time 31.77
+epoch 314, val, mean loss 0.445, total time 5.37
+epoch 315 (phase 2), train, lr=0.000082, mean loss 2.915, total time 30.70
+epoch 315, val, mean loss 0.443, total time 5.40
+epoch 316 (phase 2), train, lr=0.000080, mean loss 2.670, total time 34.30
+epoch 316, val, mean loss 0.438, total time 5.33
+epoch 317 (phase 2), train, lr=0.000077, mean loss 3.035, total time 31.48
+epoch 317, val, mean loss 0.439, total time 5.28
+epoch 318 (phase 2), train, lr=0.000074, mean loss 2.809, total time 33.59
+epoch 318, val, mean loss 0.434, total time 5.19
+epoch 319 (phase 2), train, lr=0.000072, mean loss 2.651, total time 31.95
+epoch 319, val, mean loss 0.455, total time 5.36
+epoch 320 (phase 2), train, lr=0.000069, mean loss 2.831, total time 32.45
+epoch 320, val, mean loss 0.438, total time 5.38
+epoch 321 (phase 2), train, lr=0.000066, mean loss 2.710, total time 32.25
+epoch 321, val, mean loss 0.440, total time 5.13
+epoch 322 (phase 2), train, lr=0.000063, mean loss 2.905, total time 31.96
+epoch 322, val, mean loss 0.438, total time 5.37
+epoch 323 (phase 2), train, lr=0.000060, mean loss 2.839, total time 33.01
+epoch 323, val, mean loss 0.444, total time 5.28
+epoch 324 (phase 2), train, lr=0.000057, mean loss 2.814, total time 33.36
+epoch 324, val, mean loss 0.433, total time 5.46
+epoch 325 (phase 2), train, lr=0.000054, mean loss 2.805, total time 35.04
+epoch 325, val, mean loss 0.432, total time 5.40
+epoch 326 (phase 2), train, lr=0.000051, mean loss 2.630, total time 34.07
+epoch 326, val, mean loss 0.439, total time 5.32
+epoch 327 (phase 2), train, lr=0.000047, mean loss 2.572, total time 32.73
+epoch 327, val, mean loss 0.435, total time 5.44
+epoch 328 (phase 2), train, lr=0.000044, mean loss 2.689, total time 33.46
+epoch 328, val, mean loss 0.437, total time 5.43
+epoch 329 (phase 2), train, lr=0.000041, mean loss 2.800, total time 33.23
+epoch 329, val, mean loss 0.442, total time 5.24
+epoch 330 (phase 2), train, lr=0.000038, mean loss 2.710, total time 32.62
+epoch 330, val, mean loss 0.430, total time 5.56
+========  get student model iou (epoch 330)  ========:
+✅ Background IoU: 0.9924
+✅ Foreground IoU: 0.6444
+✅ Mean IoU (mIoU): 0.8184
+epoch 331 (phase 2), train, lr=0.000035, mean loss 2.693, total time 30.67
+epoch 331, val, mean loss 0.437, total time 5.34
+epoch 332 (phase 2), train, lr=0.000032, mean loss 2.663, total time 29.89
+epoch 332, val, mean loss 0.436, total time 5.52
+epoch 333 (phase 2), train, lr=0.000029, mean loss 2.903, total time 33.31
+epoch 333, val, mean loss 0.435, total time 5.47
+epoch 334 (phase 2), train, lr=0.000027, mean loss 2.868, total time 32.96
+epoch 334, val, mean loss 0.438, total time 5.49
+epoch 335 (phase 2), train, lr=0.000024, mean loss 2.862, total time 31.98
+epoch 335, val, mean loss 0.429, total time 5.49
+epoch 336 (phase 2), train, lr=0.000021, mean loss 2.839, total time 31.57
+epoch 336, val, mean loss 0.437, total time 5.49
+epoch 337 (phase 2), train, lr=0.000019, mean loss 2.832, total time 32.70
+epoch 337, val, mean loss 0.444, total time 5.43
+epoch 338 (phase 2), train, lr=0.000017, mean loss 2.673, total time 32.27
+epoch 338, val, mean loss 0.436, total time 5.47
+epoch 339 (phase 2), train, lr=0.000014, mean loss 2.771, total time 32.75
+epoch 339, val, mean loss 0.435, total time 5.49
+epoch 340 (phase 2), train, lr=0.000012, mean loss 2.755, total time 31.31
+epoch 340, val, mean loss 0.429, total time 5.32
+epoch 341 (phase 2), train, lr=0.000010, mean loss 2.969, total time 34.17
+epoch 341, val, mean loss 0.432, total time 5.55
+epoch 342 (phase 2), train, lr=0.000009, mean loss 2.947, total time 33.20
+epoch 342, val, mean loss 0.434, total time 5.46
+epoch 343 (phase 2), train, lr=0.000007, mean loss 2.705, total time 33.95
+epoch 343, val, mean loss 0.433, total time 5.36
+epoch 344 (phase 2), train, lr=0.000006, mean loss 2.698, total time 32.20
+epoch 344, val, mean loss 0.433, total time 5.24
+epoch 345 (phase 2), train, lr=0.000004, mean loss 2.713, total time 30.89
+epoch 345, val, mean loss 0.436, total time 5.37
+epoch 346 (phase 2), train, lr=0.000003, mean loss 2.791, total time 33.02
+epoch 346, val, mean loss 0.433, total time 5.25
+epoch 347 (phase 2), train, lr=0.000003, mean loss 2.873, total time 34.39
+epoch 347, val, mean loss 0.437, total time 4.94
+epoch 348 (phase 2), train, lr=0.000002, mean loss 2.830, total time 33.99
+epoch 348, val, mean loss 0.431, total time 5.38
+epoch 349 (phase 2), train, lr=0.000001, mean loss 2.597, total time 32.02
+epoch 349, val, mean loss 0.432, total time 5.42
+epoch 350 (phase 2), train, lr=0.000001, mean loss 2.961, total time 31.09
+epoch 350, val, mean loss 0.440, total time 5.25
+epoch 351 (phase 2), train, lr=0.000001, mean loss 2.599, total time 33.28
+epoch 351, val, mean loss 0.433, total time 5.37
+epoch 352 (phase 2), train, lr=0.000001, mean loss 2.856, total time 31.93
+epoch 352, val, mean loss 0.434, total time 5.37
+epoch 353 (phase 2), train, lr=0.000001, mean loss 3.183, total time 33.68
+epoch 353, val, mean loss 0.435, total time 5.43
+epoch 354 (phase 2), train, lr=0.000002, mean loss 2.803, total time 31.81
+epoch 354, val, mean loss 0.435, total time 5.51
+epoch 355 (phase 2), train, lr=0.000003, mean loss 2.848, total time 30.29
+epoch 355, val, mean loss 0.434, total time 5.29
+epoch 356 (phase 2), train, lr=0.000003, mean loss 2.877, total time 31.77
+epoch 356, val, mean loss 0.428, total time 5.37
+epoch 357 (phase 2), train, lr=0.000004, mean loss 2.822, total time 31.51
+epoch 357, val, mean loss 0.435, total time 5.44
+epoch 358 (phase 2), train, lr=0.000006, mean loss 2.674, total time 31.99
+epoch 358, val, mean loss 0.439, total time 5.33
+epoch 359 (phase 2), train, lr=0.000007, mean loss 2.741, total time 30.58
+epoch 359, val, mean loss 0.436, total time 5.33
+epoch 360 (phase 2), train, lr=0.000009, mean loss 2.786, total time 34.73
+epoch 360, val, mean loss 0.443, total time 5.33
+========  get student model iou (epoch 360)  ========:
+✅ Background IoU: 0.9922
+✅ Foreground IoU: 0.6350
+✅ Mean IoU (mIoU): 0.8136
+epoch 361 (phase 2), train, lr=0.000010, mean loss 3.229, total time 32.53
+epoch 361, val, mean loss 0.435, total time 5.37
+epoch 362 (phase 2), train, lr=0.000012, mean loss 2.967, total time 32.28
+epoch 362, val, mean loss 0.439, total time 5.00
+epoch 363 (phase 2), train, lr=0.000014, mean loss 2.740, total time 32.25
+epoch 363, val, mean loss 0.445, total time 5.29
+epoch 364 (phase 2), train, lr=0.000017, mean loss 2.730, total time 30.82
+epoch 364, val, mean loss 0.432, total time 5.38
+epoch 365 (phase 2), train, lr=0.000019, mean loss 2.998, total time 30.97
+epoch 365, val, mean loss 0.435, total time 5.44
+epoch 366 (phase 2), train, lr=0.000021, mean loss 2.705, total time 34.26
+epoch 366, val, mean loss 0.440, total time 5.26
+epoch 367 (phase 2), train, lr=0.000024, mean loss 2.651, total time 35.63
+epoch 367, val, mean loss 0.440, total time 5.29
+epoch 368 (phase 2), train, lr=0.000027, mean loss 2.785, total time 34.23
+epoch 368, val, mean loss 0.434, total time 5.30
+epoch 369 (phase 2), train, lr=0.000029, mean loss 2.684, total time 33.77
+epoch 369, val, mean loss 0.436, total time 5.28
+epoch 370 (phase 2), train, lr=0.000032, mean loss 2.752, total time 31.88
+epoch 370, val, mean loss 0.432, total time 5.36
+epoch 371 (phase 2), train, lr=0.000035, mean loss 2.761, total time 31.90
+epoch 371, val, mean loss 0.441, total time 5.48
+epoch 372 (phase 2), train, lr=0.000038, mean loss 2.716, total time 33.13
+epoch 372, val, mean loss 0.433, total time 5.39
+epoch 373 (phase 2), train, lr=0.000041, mean loss 2.665, total time 32.34
+epoch 373, val, mean loss 0.435, total time 5.32
+epoch 374 (phase 2), train, lr=0.000044, mean loss 2.850, total time 31.43
+epoch 374, val, mean loss 0.432, total time 5.44
+epoch 375 (phase 2), train, lr=0.000047, mean loss 2.697, total time 33.63
+epoch 375, val, mean loss 0.444, total time 5.46
+epoch 376 (phase 2), train, lr=0.000050, mean loss 2.620, total time 31.86
+epoch 376, val, mean loss 0.435, total time 5.24
+epoch 377 (phase 2), train, lr=0.000054, mean loss 2.873, total time 32.19
+epoch 377, val, mean loss 0.427, total time 5.40
+epoch 378 (phase 2), train, lr=0.000057, mean loss 2.894, total time 33.66
+epoch 378, val, mean loss 0.435, total time 5.21
+epoch 379 (phase 2), train, lr=0.000060, mean loss 2.874, total time 33.44
+epoch 379, val, mean loss 0.434, total time 5.42
+epoch 380 (phase 2), train, lr=0.000063, mean loss 2.949, total time 32.57
+epoch 380, val, mean loss 0.437, total time 5.42
+epoch 381 (phase 2), train, lr=0.000066, mean loss 2.797, total time 30.89
+epoch 381, val, mean loss 0.445, total time 5.39
+epoch 382 (phase 2), train, lr=0.000069, mean loss 2.730, total time 31.48
+epoch 382, val, mean loss 0.453, total time 5.36
+epoch 383 (phase 2), train, lr=0.000072, mean loss 2.680, total time 32.08
+epoch 383, val, mean loss 0.461, total time 5.36
+epoch 384 (phase 2), train, lr=0.000074, mean loss 2.655, total time 32.65
+epoch 384, val, mean loss 0.453, total time 5.68
+epoch 385 (phase 2), train, lr=0.000077, mean loss 2.775, total time 33.58
+epoch 385, val, mean loss 0.441, total time 5.47
+epoch 386 (phase 2), train, lr=0.000080, mean loss 2.663, total time 30.82
+epoch 386, val, mean loss 0.439, total time 5.42
+epoch 387 (phase 2), train, lr=0.000082, mean loss 2.691, total time 33.02
+epoch 387, val, mean loss 0.449, total time 5.32
+epoch 388 (phase 2), train, lr=0.000084, mean loss 2.811, total time 31.36
+epoch 388, val, mean loss 0.439, total time 5.58
+epoch 389 (phase 2), train, lr=0.000087, mean loss 2.685, total time 31.95
+epoch 389, val, mean loss 0.435, total time 5.43
+epoch 390 (phase 2), train, lr=0.000089, mean loss 2.748, total time 31.95
+epoch 390, val, mean loss 0.432, total time 5.34
+========  get student model iou (epoch 390)  ========:
+✅ Background IoU: 0.9925
+✅ Foreground IoU: 0.6427
+✅ Mean IoU (mIoU): 0.8176
+epoch 391 (phase 2), train, lr=0.000091, mean loss 2.892, total time 30.82
+epoch 391, val, mean loss 0.436, total time 5.27
+epoch 392 (phase 2), train, lr=0.000092, mean loss 2.771, total time 33.71
+epoch 392, val, mean loss 0.431, total time 5.32
+epoch 393 (phase 2), train, lr=0.000094, mean loss 3.015, total time 32.10
+epoch 393, val, mean loss 0.434, total time 5.39
+epoch 394 (phase 2), train, lr=0.000095, mean loss 2.695, total time 32.52
+epoch 394, val, mean loss 0.439, total time 5.35
+epoch 395 (phase 2), train, lr=0.000097, mean loss 2.842, total time 31.20
+epoch 395, val, mean loss 0.441, total time 5.31
+epoch 396 (phase 2), train, lr=0.000098, mean loss 2.888, total time 35.32
+epoch 396, val, mean loss 0.437, total time 5.41
+epoch 397 (phase 2), train, lr=0.000098, mean loss 2.786, total time 31.09
+epoch 397, val, mean loss 0.438, total time 5.33
+epoch 398 (phase 2), train, lr=0.000099, mean loss 2.672, total time 30.99
+epoch 398, val, mean loss 0.434, total time 5.41
+epoch 399 (phase 2), train, lr=0.000100, mean loss 2.991, total time 31.60
+epoch 399, val, mean loss 0.430, total time 5.21
+epoch 400 (phase 2), train, lr=0.000100, mean loss 2.773, total time 34.52
+epoch 400, val, mean loss 0.441, total time 5.54
+epoch 401 (phase 2), train, lr=0.000100, mean loss 2.916, total time 33.45
+epoch 401, val, mean loss 0.439, total time 5.43
+epoch 402 (phase 2), train, lr=0.000100, mean loss 2.892, total time 32.73
+epoch 402, val, mean loss 0.442, total time 5.39
+epoch 403 (phase 2), train, lr=0.000100, mean loss 2.763, total time 31.52
+epoch 403, val, mean loss 0.444, total time 5.36
+epoch 404 (phase 2), train, lr=0.000099, mean loss 2.857, total time 32.98
+epoch 404, val, mean loss 0.427, total time 5.33
+epoch 405 (phase 2), train, lr=0.000098, mean loss 2.658, total time 34.32
+epoch 405, val, mean loss 0.432, total time 5.44
+epoch 406 (phase 2), train, lr=0.000098, mean loss 2.701, total time 33.63
+epoch 406, val, mean loss 0.439, total time 5.24
+epoch 407 (phase 2), train, lr=0.000097, mean loss 2.990, total time 29.59
+epoch 407, val, mean loss 0.444, total time 5.26
+epoch 408 (phase 2), train, lr=0.000095, mean loss 2.601, total time 34.95
+epoch 408, val, mean loss 0.443, total time 5.39
+epoch 409 (phase 2), train, lr=0.000094, mean loss 2.653, total time 29.26
+epoch 409, val, mean loss 0.439, total time 5.35
+epoch 410 (phase 2), train, lr=0.000092, mean loss 2.889, total time 33.01
+epoch 410, val, mean loss 0.435, total time 5.47
+epoch 411 (phase 2), train, lr=0.000091, mean loss 2.681, total time 33.35
+epoch 411, val, mean loss 0.440, total time 5.45
+epoch 412 (phase 2), train, lr=0.000089, mean loss 2.614, total time 31.43
+epoch 412, val, mean loss 0.440, total time 5.39
+epoch 413 (phase 2), train, lr=0.000087, mean loss 2.691, total time 35.81
+epoch 413, val, mean loss 0.438, total time 5.43
+epoch 414 (phase 2), train, lr=0.000084, mean loss 2.577, total time 32.10
+epoch 414, val, mean loss 0.440, total time 5.43
+epoch 415 (phase 2), train, lr=0.000082, mean loss 3.111, total time 33.05
+epoch 415, val, mean loss 0.439, total time 5.47
+epoch 416 (phase 2), train, lr=0.000080, mean loss 3.185, total time 31.06
+epoch 416, val, mean loss 0.445, total time 5.52
+epoch 417 (phase 2), train, lr=0.000077, mean loss 2.917, total time 34.70
+epoch 417, val, mean loss 0.440, total time 5.59
+epoch 418 (phase 2), train, lr=0.000074, mean loss 2.930, total time 31.20
+epoch 418, val, mean loss 0.437, total time 5.38
+epoch 419 (phase 2), train, lr=0.000072, mean loss 2.692, total time 30.93
+epoch 419, val, mean loss 0.450, total time 5.54
+epoch 420 (phase 2), train, lr=0.000069, mean loss 2.866, total time 31.32
+epoch 420, val, mean loss 0.452, total time 5.40
+========  get student model iou (epoch 420)  ========:
+✅ Background IoU: 0.9922
+✅ Foreground IoU: 0.6322
+✅ Mean IoU (mIoU): 0.8122
+epoch 421 (phase 2), train, lr=0.000066, mean loss 2.822, total time 31.27
+epoch 421, val, mean loss 0.451, total time 5.40
+epoch 422 (phase 2), train, lr=0.000063, mean loss 2.951, total time 32.13
+epoch 422, val, mean loss 0.460, total time 5.52
+epoch 423 (phase 2), train, lr=0.000060, mean loss 2.857, total time 30.51
+epoch 423, val, mean loss 0.440, total time 5.21
+epoch 424 (phase 2), train, lr=0.000057, mean loss 2.864, total time 30.26
+epoch 424, val, mean loss 0.448, total time 5.28
+epoch 425 (phase 2), train, lr=0.000054, mean loss 2.741, total time 31.51
+epoch 425, val, mean loss 0.443, total time 5.34
+epoch 426 (phase 2), train, lr=0.000051, mean loss 2.819, total time 34.07
+epoch 426, val, mean loss 0.444, total time 5.45
+epoch 427 (phase 2), train, lr=0.000047, mean loss 2.917, total time 34.03
+epoch 427, val, mean loss 0.441, total time 5.36
+epoch 428 (phase 2), train, lr=0.000044, mean loss 2.941, total time 31.77
+epoch 428, val, mean loss 0.437, total time 5.26
+epoch 429 (phase 2), train, lr=0.000041, mean loss 3.084, total time 32.37
+epoch 429, val, mean loss 0.447, total time 5.44
+epoch 430 (phase 2), train, lr=0.000038, mean loss 2.616, total time 31.49
+epoch 430, val, mean loss 0.444, total time 5.41
+epoch 431 (phase 2), train, lr=0.000035, mean loss 2.796, total time 32.45
+epoch 431, val, mean loss 0.452, total time 5.13
+epoch 432 (phase 2), train, lr=0.000032, mean loss 2.723, total time 32.01
+epoch 432, val, mean loss 0.446, total time 5.37
+epoch 433 (phase 2), train, lr=0.000029, mean loss 2.966, total time 33.44
+epoch 433, val, mean loss 0.442, total time 5.27
+epoch 434 (phase 2), train, lr=0.000027, mean loss 2.780, total time 30.42
+epoch 434, val, mean loss 0.448, total time 5.35
+epoch 435 (phase 2), train, lr=0.000024, mean loss 2.967, total time 32.98
+epoch 435, val, mean loss 0.449, total time 5.39
+epoch 436 (phase 2), train, lr=0.000021, mean loss 2.622, total time 35.62
+epoch 436, val, mean loss 0.455, total time 5.47
+epoch 437 (phase 2), train, lr=0.000019, mean loss 3.001, total time 31.86
+epoch 437, val, mean loss 0.439, total time 5.43
+epoch 438 (phase 2), train, lr=0.000017, mean loss 2.630, total time 32.09
+epoch 438, val, mean loss 0.450, total time 5.41
+epoch 439 (phase 2), train, lr=0.000014, mean loss 2.785, total time 30.32
+epoch 439, val, mean loss 0.445, total time 5.28
+epoch 440 (phase 2), train, lr=0.000012, mean loss 2.797, total time 33.43
+epoch 440, val, mean loss 0.447, total time 5.19
+epoch 441 (phase 2), train, lr=0.000010, mean loss 2.893, total time 32.92
+epoch 441, val, mean loss 0.453, total time 5.40
+epoch 442 (phase 2), train, lr=0.000009, mean loss 2.892, total time 31.06
+epoch 442, val, mean loss 0.445, total time 5.35
+epoch 443 (phase 2), train, lr=0.000007, mean loss 2.737, total time 34.40
+epoch 443, val, mean loss 0.439, total time 5.45
+epoch 444 (phase 2), train, lr=0.000006, mean loss 3.055, total time 33.42
+epoch 444, val, mean loss 0.450, total time 5.34
+epoch 445 (phase 2), train, lr=0.000004, mean loss 2.788, total time 32.97
+epoch 445, val, mean loss 0.446, total time 5.37
+epoch 446 (phase 2), train, lr=0.000003, mean loss 2.740, total time 30.73
+epoch 446, val, mean loss 0.445, total time 5.38
+epoch 447 (phase 2), train, lr=0.000003, mean loss 2.578, total time 33.11
+epoch 447, val, mean loss 0.445, total time 5.48
+epoch 448 (phase 2), train, lr=0.000002, mean loss 2.891, total time 30.47
+epoch 448, val, mean loss 0.443, total time 5.38
+epoch 449 (phase 2), train, lr=0.000001, mean loss 2.715, total time 31.86
+epoch 449, val, mean loss 0.443, total time 5.33
+epoch 450 (phase 2), train, lr=0.000001, mean loss 2.885, total time 32.72
+epoch 450, val, mean loss 0.439, total time 5.44
+========  get student model iou (epoch 450)  ========:
+✅ Background IoU: 0.9924
+✅ Foreground IoU: 0.6372
+✅ Mean IoU (mIoU): 0.8148
+epoch 451 (phase 2), train, lr=0.000001, mean loss 2.774, total time 31.49
+epoch 451, val, mean loss 0.447, total time 5.40
+epoch 452 (phase 2), train, lr=0.000001, mean loss 2.737, total time 31.38
+epoch 452, val, mean loss 0.441, total time 5.54
+epoch 453 (phase 2), train, lr=0.000001, mean loss 2.643, total time 32.17
+epoch 453, val, mean loss 0.446, total time 5.49
+epoch 454 (phase 2), train, lr=0.000002, mean loss 2.815, total time 32.34
+epoch 454, val, mean loss 0.439, total time 5.50
+epoch 455 (phase 2), train, lr=0.000003, mean loss 2.777, total time 33.22
+epoch 455, val, mean loss 0.448, total time 5.32
+epoch 456 (phase 2), train, lr=0.000003, mean loss 2.715, total time 32.25
+epoch 456, val, mean loss 0.440, total time 5.30
+epoch 457 (phase 2), train, lr=0.000004, mean loss 2.694, total time 33.28
+epoch 457, val, mean loss 0.441, total time 5.36
+epoch 458 (phase 2), train, lr=0.000006, mean loss 2.716, total time 30.24
+epoch 458, val, mean loss 0.443, total time 5.37
+epoch 459 (phase 2), train, lr=0.000007, mean loss 2.793, total time 34.15
+epoch 459, val, mean loss 0.452, total time 5.61
+epoch 460 (phase 2), train, lr=0.000009, mean loss 2.891, total time 31.80
+epoch 460, val, mean loss 0.447, total time 5.24
+epoch 461 (phase 2), train, lr=0.000010, mean loss 2.835, total time 32.30
+epoch 461, val, mean loss 0.448, total time 5.51
+epoch 462 (phase 2), train, lr=0.000012, mean loss 2.752, total time 32.47
+epoch 462, val, mean loss 0.449, total time 5.39
+epoch 463 (phase 2), train, lr=0.000014, mean loss 2.784, total time 31.07
+epoch 463, val, mean loss 0.451, total time 5.02
+epoch 464 (phase 2), train, lr=0.000017, mean loss 2.847, total time 33.00
+epoch 464, val, mean loss 0.444, total time 5.36
+epoch 465 (phase 2), train, lr=0.000019, mean loss 2.794, total time 32.99
+epoch 465, val, mean loss 0.441, total time 5.27
+epoch 466 (phase 2), train, lr=0.000021, mean loss 2.782, total time 30.00
+epoch 466, val, mean loss 0.442, total time 5.43
+epoch 467 (phase 2), train, lr=0.000024, mean loss 2.642, total time 32.90
+epoch 467, val, mean loss 0.441, total time 5.45
+epoch 468 (phase 2), train, lr=0.000027, mean loss 2.565, total time 33.51
+epoch 468, val, mean loss 0.437, total time 5.48
+epoch 469 (phase 2), train, lr=0.000029, mean loss 2.987, total time 35.26
+epoch 469, val, mean loss 0.444, total time 5.32
+epoch 470 (phase 2), train, lr=0.000032, mean loss 2.973, total time 31.98
+epoch 470, val, mean loss 0.439, total time 5.46
+epoch 471 (phase 2), train, lr=0.000035, mean loss 2.943, total time 31.61
+epoch 471, val, mean loss 0.437, total time 5.47
+epoch 472 (phase 2), train, lr=0.000038, mean loss 2.781, total time 32.59
+epoch 472, val, mean loss 0.447, total time 5.44
+epoch 473 (phase 2), train, lr=0.000041, mean loss 2.843, total time 31.54
+epoch 473, val, mean loss 0.449, total time 5.45
+epoch 474 (phase 2), train, lr=0.000044, mean loss 2.777, total time 32.62
+epoch 474, val, mean loss 0.437, total time 5.22
+epoch 475 (phase 2), train, lr=0.000047, mean loss 2.823, total time 33.13
+epoch 475, val, mean loss 0.446, total time 5.38
+epoch 476 (phase 2), train, lr=0.000051, mean loss 2.863, total time 31.78
+epoch 476, val, mean loss 0.448, total time 5.37
+epoch 477 (phase 2), train, lr=0.000054, mean loss 2.714, total time 31.42
+epoch 477, val, mean loss 0.446, total time 5.40
+epoch 478 (phase 2), train, lr=0.000057, mean loss 2.627, total time 32.37
+epoch 478, val, mean loss 0.440, total time 5.52
+epoch 479 (phase 2), train, lr=0.000060, mean loss 2.782, total time 30.67
+epoch 479, val, mean loss 0.447, total time 5.44
+epoch 480 (phase 2), train, lr=0.000063, mean loss 2.628, total time 32.87
+epoch 480, val, mean loss 0.455, total time 5.19
+========  get student model iou (epoch 480)  ========:
+✅ Background IoU: 0.9921
+✅ Foreground IoU: 0.6282
+✅ Mean IoU (mIoU): 0.8101
+epoch 481 (phase 2), train, lr=0.000066, mean loss 3.089, total time 31.68
+epoch 481, val, mean loss 0.446, total time 5.46
+epoch 482 (phase 2), train, lr=0.000069, mean loss 2.829, total time 34.17
+epoch 482, val, mean loss 0.445, total time 5.29
+epoch 483 (phase 2), train, lr=0.000072, mean loss 2.705, total time 32.22
+epoch 483, val, mean loss 0.453, total time 5.43
+epoch 484 (phase 2), train, lr=0.000074, mean loss 2.603, total time 33.25
+epoch 484, val, mean loss 0.440, total time 5.44
+epoch 485 (phase 2), train, lr=0.000077, mean loss 2.760, total time 31.61
+epoch 485, val, mean loss 0.440, total time 5.22
+epoch 486 (phase 2), train, lr=0.000080, mean loss 2.824, total time 31.74
+epoch 486, val, mean loss 0.445, total time 5.32
+epoch 487 (phase 2), train, lr=0.000082, mean loss 2.718, total time 31.51
+epoch 487, val, mean loss 0.458, total time 5.43
+epoch 488 (phase 2), train, lr=0.000084, mean loss 2.717, total time 33.55
+epoch 488, val, mean loss 0.448, total time 5.35
+epoch 489 (phase 2), train, lr=0.000087, mean loss 2.785, total time 32.65
+epoch 489, val, mean loss 0.446, total time 5.51
+epoch 490 (phase 2), train, lr=0.000089, mean loss 2.835, total time 31.53
+epoch 490, val, mean loss 0.452, total time 5.46
+epoch 491 (phase 2), train, lr=0.000091, mean loss 2.681, total time 34.87
+epoch 491, val, mean loss 0.454, total time 5.40
+epoch 492 (phase 2), train, lr=0.000092, mean loss 2.690, total time 32.11
+epoch 492, val, mean loss 0.455, total time 5.40
+epoch 493 (phase 2), train, lr=0.000094, mean loss 2.902, total time 32.70
+epoch 493, val, mean loss 0.439, total time 5.34
+epoch 494 (phase 2), train, lr=0.000095, mean loss 2.815, total time 29.79
+epoch 494, val, mean loss 0.449, total time 5.53
+epoch 495 (phase 2), train, lr=0.000097, mean loss 2.697, total time 30.98
+epoch 495, val, mean loss 0.447, total time 5.16
+epoch 496 (phase 2), train, lr=0.000098, mean loss 2.650, total time 31.78
+epoch 496, val, mean loss 0.454, total time 5.50
+epoch 497 (phase 2), train, lr=0.000098, mean loss 3.156, total time 34.49
+epoch 497, val, mean loss 0.436, total time 5.47
+epoch 498 (phase 2), train, lr=0.000099, mean loss 3.031, total time 31.77
+epoch 498, val, mean loss 0.436, total time 5.46
+epoch 499 (phase 2), train, lr=0.000100, mean loss 2.731, total time 32.99
+epoch 499, val, mean loss 0.448, total time 5.40
+epoch 500 (phase 2), train, lr=0.000100, mean loss 3.002, total time 34.66
+epoch 500, val, mean loss 0.440, total time 5.31
+
+========  test of the best model  ========:
+✅ Background IoU: 0.9927
+✅ Foreground IoU: 0.6442
+✅ Mean IoU (mIoU): 0.8184

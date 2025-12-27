@@ -1,0 +1,18 @@
+===================  validation of model  ===================
+✅ Background IoU: 0.9137
+✅ Foreground IoU: 0.0009
+✅ Mean IoU (mIoU): 0.4573
+epoch 1 (phase 1), train, lr=0.001000, mean loss 1.443, total time 39.72
+epoch 1, val, mean loss 1.078, total time 5.35
+epoch 2 (phase 1), train, lr=0.001000, mean loss 1.089, total time 35.95
+epoch 2, val, mean loss 1.077, total time 5.60
+epoch 3 (phase 1), train, lr=0.001000, mean loss 1.086, total time 32.36
+epoch 3, val, mean loss 1.084, total time 5.50
+epoch 4 (phase 1), train, lr=0.000999, mean loss 1.057, total time 33.72
+epoch 4, val, mean loss 1.050, total time 5.30
+epoch 5 (phase 1), train, lr=0.000999, mean loss 1.044, total time 32.83
+epoch 5, val, mean loss 1.060, total time 5.58
+epoch 6 (phase 1), train, lr=0.000998, mean loss 1.041, total time 32.32
+epoch 6, val, mean loss 1.047, total time 5.40
+epoch 7 (phase 1), train, lr=0.000998, mean loss 1.036, total time 32.07
+epoch 7, val, mean loss 1.047, total time 5.47
