@@ -32,9 +32,9 @@ def visualize_simple_heatmap(pred_path, gt_path, output_path, img_name="image"):
         img_name: 图像名称
     """
     import numpy as np
-    import matplotlib.pyplot as plt
     import matplotlib
     matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
     from PIL import Image
     
     # 加载预测和真实掩码
@@ -47,7 +47,6 @@ def visualize_simple_heatmap(pred_path, gt_path, output_path, img_name="image"):
     
     # 调整尺寸以匹配
     if pred_mask.shape != gt_mask.shape:
-        print(f"⚠️  调整真实掩码尺寸: {gt_mask.shape} -> {pred_mask.shape}")
         gt_img = Image.fromarray(gt_mask)
         gt_img = gt_img.resize((pred_mask.shape[1], pred_mask.shape[0]), Image.NEAREST)
         gt_mask = np.array(gt_img)

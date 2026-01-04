@@ -135,9 +135,9 @@ def visualize_defect_heatmap(pred_path, gt_path, output_path,
         img_name: 图像名称
     """
     import numpy as np
-    import matplotlib.pyplot as plt
     import matplotlib
     matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
     from PIL import Image
     
     # 加载预测和真实掩码
@@ -323,7 +323,7 @@ def main():
     
     args = parser.parse_args()
     
-    # Import heavy dependencies only after argument parsing
+    # Import dependencies after argument parsing to allow --help without installation
     import numpy as np
     import torch
     from models import model_dict
