@@ -165,11 +165,19 @@ for img_name in img_names:
 
 ## 依赖要求
 
+### 简化版工具 (visualize_heatmap_simple.py)
 ```bash
-pip install numpy matplotlib pillow torch scipy
+pip install numpy matplotlib pillow
 ```
 
-如果使用完整版工具，还需要项目中的模型定义。
+### 完整版工具 (visualize_heatmap.py)
+```bash
+pip install numpy matplotlib pillow torch
+# scipy 是可选的，用于图像缩放，如果没有将使用 PIL 作为替代
+pip install scipy  # 可选
+```
+
+注意: 如果使用完整版工具，还需要项目中的模型定义文件。
 
 ## 常见问题
 

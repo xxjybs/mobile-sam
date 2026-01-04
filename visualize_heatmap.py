@@ -96,6 +96,30 @@ def compute_prediction_confidence(model, data_dir, img_name, device, img_size=25
         traceback.print_exc()
         return None
 
+def get_font_properties():
+    """
+    获取可用的中文字体配置
+    Returns font properties or None if Chinese fonts are not available
+    """
+    try:
+        import matplotlib.pyplot as plt
+        import matplotlib.font_manager as fm
+        
+        # Try to find Chinese fonts
+        chinese_fonts = ['SimHei', 'Microsoft YaHei', 'STHeiti', 'WenQuanYi Zen Hei', 
+                        'Noto Sans CJK', 'Droid Sans Fallback']
+        
+        available_fonts = [f.name for f in fm.fontManager.ttflist]
+        
+        for font in chinese_fonts:
+            if font in available_fonts:
+                return font
+        
+        # No Chinese font found, return None to use default
+        return None
+    except:
+        return None
+
 def visualize_defect_heatmap(pred_path, gt_path, output_path, 
                             original_img=None, confidence_map=None,
                             img_name="image"):
@@ -174,6 +198,10 @@ def visualize_defect_heatmap(pred_path, gt_path, output_path,
     # 创建图形
     fig = plt.figure(figsize=(5 * n_cols, 5 * n_rows))
     
+    # Get font properties for Chinese text
+    chinese_font = get_font_properties()
+    font_props = {'fontproperties': chinese_font} if chinese_font else {}
+    
     plot_idx = 1
     
     # 原始图像
@@ -183,29 +211,29 @@ def visualize_defect_heatmap(pred_path, gt_path, output_path,
             plt.imshow(original_img)
         else:
             plt.imshow(original_img, cmap='gray')
-        plt.title('原始图像', fontproperties='SimHei', fontsize=14)
+        plt.title('原始图像 (Original Image)', fontsize=14, **font_props)
         plt.axis('off')
         plot_idx += 1
     
     # 预测掩码
     plt.subplot(n_rows, n_cols, plot_idx)
     plt.imshow(pred_mask, cmap='gray', vmin=0, vmax=255)
-    plt.title('预测掩码', fontproperties='SimHei', fontsize=14)
+    plt.title('预测掩码 (Predicted Mask)', fontsize=14, **font_props)
     plt.axis('off')
     plot_idx += 1
     
     # 真实掩码
     plt.subplot(n_rows, n_cols, plot_idx)
     plt.imshow(gt_mask, cmap='gray', vmin=0, vmax=255)
-    plt.title('真实掩码', fontproperties='SimHei', fontsize=14)
+    plt.title('真实掩码 (Ground Truth)', fontsize=14, **font_props)
     plt.axis('off')
     plot_idx += 1
     
     # 差异图
     plt.subplot(n_rows, n_cols, plot_idx)
     plt.imshow(diff_map)
-    plt.title(f'差异分析\n绿色=正确 红色=误报 黄色=漏报', 
-              fontproperties='SimHei', fontsize=12)
+    plt.title(f'差异分析 (Difference)\n绿色=正确 红色=误报 黄色=漏报', 
+              fontsize=12, **font_props)
     plt.axis('off')
     plot_idx += 1
     
@@ -214,7 +242,7 @@ def visualize_defect_heatmap(pred_path, gt_path, output_path,
         plt.subplot(n_rows, n_cols, plot_idx)
         im = plt.imshow(confidence_map, cmap='jet', vmin=0, vmax=1)
         plt.colorbar(im, fraction=0.046, pad=0.04)
-        plt.title('预测置信度热力图', fontproperties='SimHei', fontsize=14)
+        plt.title('预测置信度热力图 (Confidence)', fontsize=14, **font_props)
         plt.axis('off')
         plot_idx += 1
     
@@ -228,11 +256,18 @@ def visualize_defect_heatmap(pred_path, gt_path, output_path,
         
         # 调整尺寸匹配
         if base_img.shape[:2] != diff_map.shape[:2]:
-            from scipy import ndimage
-            base_img = ndimage.zoom(base_img, 
-                                   (diff_map.shape[0] / base_img.shape[0],
-                                    diff_map.shape[1] / base_img.shape[1], 1), 
-                                   order=1)
+            try:
+                from scipy import ndimage
+                base_img = ndimage.zoom(base_img, 
+                                       (diff_map.shape[0] / base_img.shape[0],
+                                        diff_map.shape[1] / base_img.shape[1], 1), 
+                                       order=1)
+            except ImportError:
+                # Fallback to PIL if scipy is not available
+                from PIL import Image as PILImage
+                base_img_pil = PILImage.fromarray(base_img.astype(np.uint8))
+                base_img_pil = base_img_pil.resize((diff_map.shape[1], diff_map.shape[0]), PILImage.BILINEAR)
+                base_img = np.array(base_img_pil)
         
         # 将差异图叠加到原始图像上
         overlay = base_img.copy()
@@ -240,15 +275,15 @@ def visualize_defect_heatmap(pred_path, gt_path, output_path,
         overlay[mask_any] = (overlay[mask_any] * 0.4 + diff_map[mask_any] * 0.6).astype(np.uint8)
         
         plt.imshow(overlay)
-        plt.title('叠加可视化', fontproperties='SimHei', fontsize=14)
+        plt.title('叠加可视化 (Overlay)', fontsize=14, **font_props)
         plt.axis('off')
         plot_idx += 1
     
     # 添加总体标题和统计信息
     fig.suptitle(f'缺陷热力图分析 - {img_name}\n'
-                 f'IoU: {iou:.4f} | 精确率: {precision:.4f} | '
-                 f'召回率: {recall:.4f} | F1: {f1_score:.4f}',
-                 fontproperties='SimHei', fontsize=16, y=0.98)
+                 f'IoU: {iou:.4f} | Precision: {precision:.4f} | '
+                 f'Recall: {recall:.4f} | F1: {f1_score:.4f}',
+                 fontsize=16, y=0.98, **font_props)
     
     plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
