@@ -4,15 +4,13 @@
 """
 
 import os
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.use('Agg')
-from PIL import Image
 import argparse
 
 def load_image_safe(image_path):
     """安全加载图像"""
+    import numpy as np
+    from PIL import Image
+    
     if not os.path.exists(image_path):
         print(f"❌ 错误: 文件不存在 {image_path}")
         return None
@@ -33,6 +31,12 @@ def visualize_simple_heatmap(pred_path, gt_path, output_path, img_name="image"):
         output_path: 输出图像路径
         img_name: 图像名称
     """
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import matplotlib
+    matplotlib.use('Agg')
+    from PIL import Image
+    
     # 加载预测和真实掩码
     pred_mask = load_image_safe(pred_path)
     gt_mask = load_image_safe(gt_path)

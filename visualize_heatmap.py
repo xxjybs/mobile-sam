@@ -4,19 +4,13 @@
 """
 
 import os
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.use('Agg')  # 使用非交互式后端
-from PIL import Image
-import torch
-import torch.nn.functional as F
-from models import model_dict
-from models.load_ckpt import load_checkpoint
 import argparse
 
 def load_image_safe(image_path):
     """安全加载图像"""
+    from PIL import Image
+    import numpy as np
+    
     if not os.path.exists(image_path):
         print(f"警告: 文件不存在 {image_path}")
         return None
@@ -29,6 +23,8 @@ def load_image_safe(image_path):
 
 def load_original_image(data_dir, img_name, test=True):
     """加载原始图像（从numpy文件）"""
+    import numpy as np
+    
     try:
         # 尝试从测试集加载
         if test:
@@ -49,6 +45,10 @@ def load_original_image(data_dir, img_name, test=True):
 
 def compute_prediction_confidence(model, data_dir, img_name, device, img_size=256):
     """使用模型计算预测置信度"""
+    import numpy as np
+    import torch
+    import torch.nn.functional as F
+    
     try:
         # 加载原始图像
         imgs = np.load(f"{data_dir}/data_test.npy")
@@ -110,6 +110,12 @@ def visualize_defect_heatmap(pred_path, gt_path, output_path,
         confidence_map: 预测置信度图（可选）
         img_name: 图像名称
     """
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import matplotlib
+    matplotlib.use('Agg')
+    from PIL import Image
+    
     # 加载预测和真实掩码
     pred_mask = load_image_safe(pred_path)
     gt_mask = load_image_safe(gt_path)
@@ -281,6 +287,12 @@ def main():
                        help='输入图像尺寸')
     
     args = parser.parse_args()
+    
+    # Import heavy dependencies only after argument parsing
+    import numpy as np
+    import torch
+    from models import model_dict
+    from models.load_ckpt import load_checkpoint
     
     # 加载原始图像（如果可用）
     original_img = load_original_image(args.data_dir, args.img_name, test=True)
