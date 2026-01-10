@@ -223,7 +223,8 @@ class OrangeDefectLoader(Dataset):
                 RandomHorizontalFlip(p=0.5),
                 RandomVerticalFlip(p=0.5),
                 RandomRotation(p=0.5, degree=(0, 360)),
-                ColorAug(brightness=0.3, contrast=0.2, saturation=0.2, p=0.2)
+                ColorAug(brightness=0.3, contrast=0.2, saturation=0.2, p=0.2),
+                DefectHoleSimulation(p=0.3, large_defect_threshold=500)
             ]
         else:
             self.aug_transforms = [
