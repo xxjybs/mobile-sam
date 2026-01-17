@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image
 from .util import AverageMeter, accuracy
 from helper.loss import *
-from helper.loss import kl_pixel_loss as criterion_kd
+from helper.distillation_loss import kl_pixel_loss as criterion_kd
 def train_vanilla(epoch, train_loader, model, criterion, optimizer, opt):
     """vanilla training"""
     model.train()
