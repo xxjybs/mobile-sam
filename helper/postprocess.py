@@ -271,6 +271,44 @@ class PostProcessor:
             enable_region_connection=False,
             connection_max_gap=10
         )
+    
+    @classmethod
+    def conservative(cls):
+        """
+        预设配置：保守配置，专注于填充内部孔洞，不扩展边界
+        Preset configuration: conservative, focus on filling internal holes only, 
+        without expanding boundaries or connecting regions.
+        This aims to improve IoU by filling holes in large defects while preserving 
+        the original edge detection accuracy.
+        """
+        return cls(
+            enable_closing=True,
+            closing_kernel_size=3,          # 小核大小，减少边界变化
+            closing_iterations=1,            # 单次迭代
+            enable_hole_fill=True,           # 填充闭合区域内孔洞（关键功能）
+            enable_small_region_removal=False,  # 不移除小区域，保留边缘小缺陷
+            min_region_area=50,
+            enable_region_connection=False,  # 不连接相邻区域
+            connection_max_gap=5
+        )
+    
+    @classmethod
+    def minimal(cls):
+        """
+        预设配置：最小化处理，仅填充闭合区域内的孔洞
+        Preset configuration: minimal processing, only fill holes inside closed regions.
+        Best for preserving original edge detection while improving large defect fill.
+        """
+        return cls(
+            enable_closing=False,            # 不使用形态学闭操作
+            closing_kernel_size=3,
+            closing_iterations=1,
+            enable_hole_fill=True,           # 仅填充内部孔洞
+            enable_small_region_removal=False,  # 保留所有区域
+            min_region_area=50,
+            enable_region_connection=False,
+            connection_max_gap=5
+        )
 
 
 if __name__ == '__main__':

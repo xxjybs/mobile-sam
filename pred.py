@@ -121,20 +121,26 @@ def main():
     
     if enable_postprocess:
         # 可选预设配置:
-        # - PostProcessor.for_large_defects(): 针对大块密集缺陷
+        # - PostProcessor.for_large_defects(): 针对大块密集缺陷（激进，可能降低IoU）
         # - PostProcessor.for_edge_defects(): 针对边缘小缺陷
         # - PostProcessor.balanced(): 平衡配置
+        # - PostProcessor.conservative(): 保守配置，专注填充内部孔洞（推荐）
+        # - PostProcessor.minimal(): 最小化处理，仅填充内部孔洞
+        # 
+        # 推荐使用 conservative() 或 minimal() 配置以提高IoU
+        postprocessor = PostProcessor.conservative()
+        
         # 或自定义配置:
-        postprocessor = PostProcessor(
-            enable_closing=True,           # 形态学闭操作，填充小孔洞
-            closing_kernel_size=5,         # 闭操作核大小
-            closing_iterations=1,          # 闭操作迭代次数
-            enable_hole_fill=True,         # 填充闭合区域内孔洞
-            enable_small_region_removal=True,  # 移除小区域噪声
-            min_region_area=100,           # 最小区域面积阈值
-            enable_region_connection=False, # 是否连接相邻区域
-            connection_max_gap=10          # 连接区域最大间隙
-        )
+        # postprocessor = PostProcessor(
+        #     enable_closing=True,           # 形态学闭操作，填充小孔洞
+        #     closing_kernel_size=3,         # 闭操作核大小（3更保守）
+        #     closing_iterations=1,          # 闭操作迭代次数
+        #     enable_hole_fill=True,         # 填充闭合区域内孔洞（关键）
+        #     enable_small_region_removal=False,  # 不移除小区域（保留边缘检测）
+        #     min_region_area=50,            # 最小区域面积阈值
+        #     enable_region_connection=False, # 不连接相邻区域（避免过度连接）
+        #     connection_max_gap=5           # 连接区域最大间隙
+        # )
     else:
         postprocessor = None
     
