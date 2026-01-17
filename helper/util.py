@@ -112,7 +112,20 @@ def evaluate_segmentation(pred_dir, gt_dir):
     return iou_list
 
 
-def pred(val_loader, model, val_img_names, save_path, gt_folder, inp_size, is_onehot=False):
+def pred(val_loader, model, val_img_names, save_path, gt_folder, inp_size, is_onehot=False, postprocessor=None):
+    """
+    模型预测并保存结果
+    
+    Args:
+        val_loader: 验证数据加载器
+        model: 模型
+        val_img_names: 验证图像名称列表
+        save_path: 保存路径
+        gt_folder: 真值文件夹路径
+        inp_size: 输入尺寸
+        is_onehot: 是否使用one-hot编码
+        postprocessor: 后处理器实例（可选），用于优化闭合区域分割
+    """
     model.eval()
     with torch.no_grad():
         for i, batch in enumerate(val_loader):
@@ -131,6 +144,11 @@ def pred(val_loader, model, val_img_names, save_path, gt_folder, inp_size, is_on
             pred_mask_bin = (pred_mask > 0.5).float() * 255
 
             mask_img = Image.fromarray(pred_mask_bin.byte().cpu().numpy())
+            
+            # 应用后处理（如果提供了后处理器）
+            if postprocessor is not None:
+                mask_img = postprocessor(mask_img)
+            
             mask_img.save(os.path.join(save_path, f"{val_img_names[i]}.png"))
 
     print("✅ 预测完成，结果保存在:", save_path)

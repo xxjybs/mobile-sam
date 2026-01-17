@@ -222,7 +222,17 @@ def evaluate_segmentation(pred_dir, gt_dir):
     # print(f"✅ Mean IoU (mIoU): {miou:.4f}")
     return iou_list
 
-def validate(val_loader, model, opt, is_teacher=False):
+def validate(val_loader, model, opt, is_teacher=False, postprocessor=None):
+    """
+    验证并保存预测结果
+    
+    Args:
+        val_loader: 验证数据加载器
+        model: 模型
+        opt: 配置选项
+        is_teacher: 是否为教师模型
+        postprocessor: 后处理器实例（可选），用于优化闭合区域分割
+    """
     # switch to evaluate mode
     model.eval()
     if is_teacher:
@@ -244,6 +254,11 @@ def validate(val_loader, model, opt, is_teacher=False):
 
             # 转换为 uint8 图像并保存
             mask_img = Image.fromarray(pred_mask_bin.byte().cpu().numpy())
+            
+            # 应用后处理（如果提供了后处理器）
+            if postprocessor is not None:
+                mask_img = postprocessor(mask_img)
+            
             mask_img.save(os.path.join(path, f"{opt.names[i]}.png"))
 
     print("✅ 预测完成，结果保存在:", path)
