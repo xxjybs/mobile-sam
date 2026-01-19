@@ -346,7 +346,15 @@ class Hiera(nn.Module):
         self.scale_factor = 32
         self.prompt_type = 'highpass'
         self.tuning_stage = "1234"
-        self.input_type = 'fft'
+        # 输入类型选项:
+        # - 'fft': 仅高通滤波（默认，保持向后兼容）
+        # - 'fft_dual': 双频融合（高通+低通，推荐用于大块缺陷检测）
+        # - 'gaussian', 'srm', 'all': 其他特征提取方式
+        # Input type options:
+        # - 'fft': highpass only (default, backward compatible)
+        # - 'fft_dual': dual-frequency fusion (highpass + lowpass, recommended for large defect detection)
+        # - 'gaussian', 'srm', 'all': other feature extraction methods
+        self.input_type = 'fft'  # 改为 'fft_dual' 以启用双频分支 / Change to 'fft_dual' to enable dual-frequency branch
         self.freq_nums = 0.25
         self.handcrafted_tune = True
         self.embedding_tune = True
@@ -507,6 +515,17 @@ class PromptGenerator(nn.Module):
             self.srm_filter = SRMFilter()
         if self.input_type == 'all':
             self.prompt = nn.Parameter(torch.zeros(3, img_size, img_size), requires_grad=False)
+        
+        # 双频分支融合：通道拼接策略
+        # Dual-frequency branch fusion: channel concatenation strategy
+        if self.input_type == 'fft_dual':
+            # 6通道(3高频+3低频)融合到3通道
+            # Fuse 6 channels (3 highpass + 3 lowpass) to 3 channels
+            self.freq_fusion_conv = nn.Sequential(
+                nn.Conv2d(6, 3, kernel_size=1, stride=1, padding=0, bias=False),
+                nn.BatchNorm2d(3),
+                nn.ReLU(inplace=True)
+            )
 
         if self.handcrafted_tune:
             if '1' in self.tuning_stage:
@@ -654,6 +673,19 @@ class PromptGenerator(nn.Module):
     def init_handcrafted(self, x):
         if self.input_type == 'fft':
             x = self.fft(x, self.freq_nums, self.prompt_type)
+        
+        # 双频分支：同时提取高频和低频特征，然后通道拼接融合
+        # Dual-frequency branch: extract both highpass and lowpass features, then fuse via channel concatenation
+        elif self.input_type == 'fft_dual':
+            # 使用优化的fft_dual函数，只计算一次FFT
+            # Use optimized fft_dual function, compute FFT only once
+            x_high, x_low = self.fft_dual(x, self.freq_nums)  # edges/details + large regions
+            # 通道拼接: (B, 3, H, W) + (B, 3, H, W) -> (B, 6, H, W)
+            # Channel concatenation: (B, 3, H, W) + (B, 3, H, W) -> (B, 6, H, W)
+            x_cat = torch.cat([x_high, x_low], dim=1)
+            # 1x1卷积融合: (B, 6, H, W) -> (B, 3, H, W)
+            # 1x1 conv fusion: (B, 6, H, W) -> (B, 3, H, W)
+            x = self.freq_fusion_conv(x_cat)
 
         elif self.input_type == 'all':
             x = self.prompt.unsqueeze(0).repeat(x.shape[0], 1, 1, 1)
@@ -774,6 +806,45 @@ class PromptGenerator(nn.Module):
         inv = torch.abs(inv)
 
         return inv
+    
+    def fft_dual(self, x, rate):
+        """
+        优化的双频FFT：只计算一次FFT，同时返回高频和低频分量
+        Optimized dual-frequency FFT: compute FFT once, return both highpass and lowpass components
+        
+        Args:
+            x: 输入张量 (B, C, H, W)
+            rate: 频率阈值比率
+        
+        Returns:
+            x_high: 高频分量 (边缘/细节)
+            x_low: 低频分量 (大块区域)
+        """
+        mask = torch.zeros(x.shape).to(x.device)
+        w, h = x.shape[-2:]
+        line = int((w * h * rate) ** .5 // 2)
+        mask[:, :, w//2-line:w//2+line, h//2-line:h//2+line] = 1
+
+        # 只计算一次FFT
+        fft = torch.fft.fftshift(torch.fft.fft2(x, norm="forward"))
+
+        # 高频 = 原始FFT * (1 - mask)
+        fft_high = fft * (1 - mask)
+        fr_high = fft_high.real
+        fi_high = fft_high.imag
+        fft_hires_high = torch.fft.ifftshift(torch.complex(fr_high, fi_high))
+        inv_high = torch.fft.ifft2(fft_hires_high, norm="forward").real
+        x_high = torch.abs(inv_high)
+
+        # 低频 = 原始FFT * mask
+        fft_low = fft * mask
+        fr_low = fft_low.real
+        fi_low = fft_low.imag
+        fft_hires_low = torch.fft.ifftshift(torch.complex(fr_low, fi_low))
+        inv_low = torch.fft.ifft2(fft_hires_low, norm="forward").real
+        x_low = torch.abs(inv_low)
+
+        return x_high, x_low
 
 class GaussianFilter(nn.Module):
     def __init__(self):
