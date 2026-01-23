@@ -232,8 +232,23 @@ def Distill_one_epoch(
 
 def train_one_epoch(
         model, traindataloader, is_onehot,
-        criterion_bce, criterion_iou, optimizer
+        criterion_bce, criterion_iou, optimizer,
+        criterion_dice=None, criterion_tversky=None
 ):
+    """
+    单个epoch的训练循环
+    Training loop for a single epoch
+    
+    Args:
+        model: 模型
+        traindataloader: 训练数据加载器
+        is_onehot: 是否使用one-hot编码
+        criterion_bce: BCE损失函数
+        criterion_iou: IoU损失函数
+        optimizer: 优化器
+        criterion_dice: Dice损失函数（可选，用于增强大块区域分割）
+        criterion_tversky: Tversky损失函数（可选，用于处理类别不平衡）
+    """
     model.train()
     losses = AverageMeter()
     for idx, data in enumerate(traindataloader):
@@ -251,6 +266,23 @@ def train_one_epoch(
             loss = criterion_bce(logit, onehot.float()) + criterion_iou(logit, onehot.float())
         else:
             loss = criterion_bce(logit, target.float()) + criterion_iou(logit, target.float()) #+ criterion_boundary(boundary, target)
+        
+        # 添加 Dice Loss（如果提供）- 对大块区域更敏感
+        # Add Dice Loss (if provided) - more sensitive to large regions
+        if criterion_dice is not None:
+            pred_prob = torch.sigmoid(logit)
+            if is_onehot:
+                loss = loss + criterion_dice(pred_prob, onehot.float())
+            else:
+                loss = loss + criterion_dice(pred_prob, target.float())
+        
+        # 添加 Tversky Loss（如果提供）- 更关注漏检（假阴性）
+        # Add Tversky Loss (if provided) - focuses more on false negatives
+        if criterion_tversky is not None:
+            if is_onehot:
+                loss = loss + criterion_tversky(logit, onehot.float())
+            else:
+                loss = loss + criterion_tversky(logit, target.float())
 
         losses.update(loss.item(), input.size(0))
         loss.backward()

@@ -15,7 +15,7 @@ from models import model_dict
 from models.load_ckpt import load_checkpoint
 from dataset.OrangeDefectDataloader import OrangeDefectLoader
 from helper.util import AverageMeter, pred, Distill_one_epoch, train_one_epoch
-from helper.loss import IOU
+from helper.loss import IOU, DiceLoss, TverskyLoss
 import random
 import shutil
 
@@ -131,6 +131,11 @@ def main():
     model = model_dict[model_name]()
     criterion_bce = torch.nn.BCEWithLogitsLoss()
     criterion_iou = IOU(is_onehot)
+    
+    # 添加 Dice Loss 和 Tversky Loss 用于增强大块缺陷分割能力
+    # Add Dice Loss and Tversky Loss to enhance large defect segmentation
+    criterion_dice = DiceLoss()
+    criterion_tversky = TverskyLoss(alpha=0.3, beta=0.7)  # beta高=更关注漏检(FN) / higher beta = focus more on false negatives
 
     optimizer, scheduler = build_phase1_optim_sched(model)
 
@@ -139,6 +144,8 @@ def main():
         model.cuda()
         criterion_bce.cuda()
         criterion_iou.cuda()
+        criterion_dice.cuda()
+        criterion_tversky.cuda()
         cudnn.benchmark = True
         print('cuda available')
     else:
@@ -206,7 +213,10 @@ def main():
 
         current_lr = optimizer.param_groups[0]['lr']
         time1 = time.time()
-        losses = train_one_epoch(model, traindataloader, is_onehot, criterion_bce, criterion_iou, optimizer)
+        # 传入额外的损失函数：Dice Loss 和 Tversky Loss
+        # Pass additional loss functions: Dice Loss and Tversky Loss
+        losses = train_one_epoch(model, traindataloader, is_onehot, criterion_bce, criterion_iou, optimizer,
+                                 criterion_dice=criterion_dice, criterion_tversky=criterion_tversky)
         scheduler.step()
 
         time2 = time.time()
