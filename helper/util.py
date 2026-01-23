@@ -267,22 +267,22 @@ def train_one_epoch(
         else:
             loss = criterion_bce(logit, target.float()) + criterion_iou(logit, target.float()) #+ criterion_boundary(boundary, target)
         
-        # 添加 Dice Loss（如果提供）- 对大块区域更敏感
-        # Add Dice Loss (if provided) - more sensitive to large regions
+        # 添加 Dice Loss（如果提供）- 对大块区域更敏感，权重2.0
+        # Add Dice Loss (if provided) - more sensitive to large regions, weight 2.0
         if criterion_dice is not None:
             pred_prob = torch.sigmoid(logit)
             if is_onehot:
-                loss = loss + criterion_dice(pred_prob, onehot.float())
+                loss = loss + 2.0 * criterion_dice(pred_prob, onehot.float())
             else:
-                loss = loss + criterion_dice(pred_prob, target.float())
+                loss = loss + 2.0 * criterion_dice(pred_prob, target.float())
         
-        # 添加 Tversky Loss（如果提供）- 更关注漏检（假阴性）
-        # Add Tversky Loss (if provided) - focuses more on false negatives
+        # 添加 Tversky Loss（如果提供）- 更关注漏检（假阴性），权重3.0
+        # Add Tversky Loss (if provided) - focuses more on false negatives, weight 3.0
         if criterion_tversky is not None:
             if is_onehot:
-                loss = loss + criterion_tversky(logit, onehot.float())
+                loss = loss + 3.0 * criterion_tversky(logit, onehot.float())
             else:
-                loss = loss + criterion_tversky(logit, target.float())
+                loss = loss + 3.0 * criterion_tversky(logit, target.float())
 
         losses.update(loss.item(), input.size(0))
         loss.backward()
