@@ -262,27 +262,23 @@ def train_one_epoch(
         logit = model(input)
         # logit, boundary = model(input)
 
-        if is_onehot:
-            loss = criterion_bce(logit, onehot.float()) + criterion_iou(logit, onehot.float())
-        else:
-            loss = criterion_bce(logit, target.float()) + criterion_iou(logit, target.float()) #+ criterion_boundary(boundary, target)
-        
-        # 添加 Dice Loss（如果提供）- 对大块区域更敏感，权重2.0
-        # Add Dice Loss (if provided) - more sensitive to large regions, weight 2.0
-        if criterion_dice is not None:
+        # 方案A：完全移除 BCE，只用区域敏感损失 (Dice + Tversky)
+        # Solution A: Completely remove BCE, use only region-sensitive losses (Dice + Tversky)
+        if criterion_dice is not None and criterion_tversky is not None:
             pred_prob = torch.sigmoid(logit)
             if is_onehot:
-                loss = loss + 2.0 * criterion_dice(pred_prob, onehot.float())
+                # 只用 Dice + Tversky，不用 BCE 和 IoU
+                # Use only Dice + Tversky, no BCE and IoU
+                loss = 3.0 * criterion_dice(pred_prob, onehot.float()) + 5.0 * criterion_tversky(logit, onehot.float())
             else:
-                loss = loss + 2.0 * criterion_dice(pred_prob, target.float())
-        
-        # 添加 Tversky Loss（如果提供）- 更关注漏检（假阴性），权重3.0
-        # Add Tversky Loss (if provided) - focuses more on false negatives, weight 3.0
-        if criterion_tversky is not None:
+                loss = 3.0 * criterion_dice(pred_prob, target.float()) + 5.0 * criterion_tversky(logit, target.float())
+        else:
+            # 回退到原来的 BCE + IoU
+            # Fallback to original BCE + IoU
             if is_onehot:
-                loss = loss + 3.0 * criterion_tversky(logit, onehot.float())
+                loss = criterion_bce(logit, onehot.float()) + criterion_iou(logit, onehot.float())
             else:
-                loss = loss + 3.0 * criterion_tversky(logit, target.float())
+                loss = criterion_bce(logit, target.float()) + criterion_iou(logit, target.float())
 
         losses.update(loss.item(), input.size(0))
         loss.backward()
