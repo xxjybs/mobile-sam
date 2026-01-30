@@ -182,7 +182,9 @@ def main():
     sample_weights = []
     for i in range(len(trainset)):
         mask = trainset.masks[i]
-        defect_ratio = mask.sum() / mask.size  # 缺陷像素占比 / defect pixel ratio
+        # 归一化mask值（处理0-255的情况）/ Normalize mask values (handle 0-255 case)
+        mask_binary = (mask > 0).astype(np.float32)
+        defect_ratio = mask_binary.sum() / mask_binary.size  # 缺陷像素占比 / defect pixel ratio
         # 缺陷像素多的样本给更高权重: 基础权重1.0 + 4.0*ratio
         # Higher weight for samples with more defect pixels: base weight 1.0 + 4.0*ratio
         weight = 1.0 + 4.0 * defect_ratio
