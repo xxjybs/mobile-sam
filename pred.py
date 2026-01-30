@@ -18,6 +18,7 @@ from models.load_ckpt import load_checkpoint
 from dataset.OrangeDefectDataloader import OrangeDefectLoader
 from helper.util import AverageMeter
 from helper.loss import IOU
+from helper.postprocess import PostProcessor
 
 def compute_iou_per_class(pred, gt, class_val):
     pred_mask = (pred == class_val)
@@ -71,7 +72,15 @@ def evaluate_segmentation(pred_dir, gt_dir):
     iou_list.append(miou)
     return iou_list
 
-def validate(val_loader, model):
+def validate(val_loader, model, postprocessor=None):
+    """
+    验证并保存预测结果
+    
+    Args:
+        val_loader: 验证数据加载器
+        model: 模型
+        postprocessor: 后处理器实例（可选），用于优化闭合区域分割
+    """
     # switch to evaluate mode
     model.eval()
     with torch.no_grad():
@@ -84,6 +93,11 @@ def validate(val_loader, model):
 
             # 转换为 uint8 图像并保存
             mask_img = Image.fromarray(pred_mask_bin.byte().cpu().numpy())
+            
+            # 应用后处理（如果提供了后处理器）
+            if postprocessor is not None:
+                mask_img = postprocessor(mask_img)
+            
             mask_img.save(os.path.join(pred_save_folder, f"{val_img_names[i]}.png"))
 
     print("✅ 预测完成，结果保存在:", pred_save_folder)
@@ -99,6 +113,37 @@ def main():
     '''
     choices=['PVMNet', 'sam2_adapter_tiny', 'SegFormerB0', 'SegFormerB1']
     '''
+    
+    # --------------------- 后处理配置 ---------------------
+    # 针对密集连续大块缺陷优化的后处理器
+    # Post-processor optimized for dense continuous large defects
+    enable_postprocess = True  # 是否启用后处理
+    
+    if enable_postprocess:
+        # 可选预设配置:
+        # - PostProcessor.for_large_defects(): 针对大块密集缺陷（激进，可能降低IoU）
+        # - PostProcessor.for_edge_defects(): 针对边缘小缺陷
+        # - PostProcessor.balanced(): 平衡配置
+        # - PostProcessor.conservative(): 保守配置，专注填充内部孔洞（推荐）
+        # - PostProcessor.minimal(): 最小化处理，仅填充内部孔洞
+        # 
+        # 推荐使用 conservative() 或 minimal() 配置以提高IoU
+        postprocessor = PostProcessor.conservative()
+        
+        # 或自定义配置:
+        # postprocessor = PostProcessor(
+        #     enable_closing=True,           # 形态学闭操作，填充小孔洞
+        #     closing_kernel_size=3,         # 闭操作核大小（3更保守）
+        #     closing_iterations=1,          # 闭操作迭代次数
+        #     enable_hole_fill=True,         # 填充闭合区域内孔洞（关键）
+        #     enable_small_region_removal=False,  # 不移除小区域（保留边缘检测）
+        #     min_region_area=50,            # 最小区域面积阈值
+        #     enable_region_connection=False, # 不连接相邻区域（避免过度连接）
+        #     connection_max_gap=5           # 连接区域最大间隙
+        # )
+    else:
+        postprocessor = None
+    
     ckpt_path = None
 
     if model_name == 'sam2_adapter_tiny':
@@ -157,7 +202,7 @@ def main():
     print(log_line.strip())
 
 
-    iou = validate(testdataloader, model)
+    iou = validate(testdataloader, model, postprocessor)
     log_line = '✅ Background IoU: {:.4f}\n✅ Foreground IoU: {:.4f}\n✅ Mean IoU (mIoU): {:.4f}\n'.format(
         iou[0], iou[1], iou[2])
     print(log_line.strip())
