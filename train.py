@@ -8,7 +8,7 @@ import time
 import torch
 import numpy as np
 import torch.backends.cudnn as cudnn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, WeightedRandomSampler
 import torch.nn.functional as F
 import gc
 from models import model_dict
@@ -175,7 +175,31 @@ def main():
         save_file = os.path.join(save_path, name)
         shutil.copy2(file, save_file)
     trainset = OrangeDefectLoader(dataset_path, train=True, test=False, size=img_size, num_classes=2)
-    traindataloader = DataLoader(trainset, batch_size=batch_size, shuffle=True,
+    
+    # ============ Oversampling: 给大块缺陷样本更高采样权重 ============
+    # Oversampling: Assign higher sampling weights to samples with large defects
+    print("==> 计算样本采样权重... / Computing sample weights for oversampling...")
+    sample_weights = []
+    for i in range(len(trainset)):
+        mask = trainset.masks[i]
+        defect_ratio = mask.sum() / mask.size  # 缺陷像素占比 / defect pixel ratio
+        # 缺陷像素多的样本给更高权重: 基础权重1.0 + 4.0*ratio
+        # Higher weight for samples with more defect pixels: base weight 1.0 + 4.0*ratio
+        weight = 1.0 + 4.0 * defect_ratio
+        sample_weights.append(weight)
+    
+    sampler = WeightedRandomSampler(
+        weights=sample_weights,
+        num_samples=len(trainset),
+        replacement=True  # 允许重复采样 / allow repeated sampling
+    )
+    print(f"   - 样本数 / num samples: {len(trainset)}")
+    print(f"   - 最大权重 / max weight: {max(sample_weights):.4f}")
+    print(f"   - 最小权重 / min weight: {min(sample_weights):.4f}")
+    print(f"   - 平均权重 / avg weight: {sum(sample_weights)/len(sample_weights):.4f}")
+    
+    # 使用 sampler 替代 shuffle / Use sampler instead of shuffle
+    traindataloader = DataLoader(trainset, batch_size=batch_size, sampler=sampler,
                                  num_workers=num_workers, worker_init_fn=worker_init_fn, pin_memory=True)
     testset = OrangeDefectLoader(dataset_path, train=False, test=True, size=img_size, num_classes=2)
     testdataloader = DataLoader(testset, batch_size=1, shuffle=False,
