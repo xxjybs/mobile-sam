@@ -208,23 +208,12 @@ def create_comparison_figure(
         for col_idx, (model_name, preds_info) in enumerate(predictions_dict.items()):
             ax = fig.add_subplot(gs[row_idx, 2 + col_idx])
             pred = preds_info['predictions'][row_idx]
-            iou = compute_iou(pred, gt_masks[row_idx])
             
             ax.imshow(pred, cmap='gray')
             ax.axis('off')
             
             if row_idx == 0:
                 ax.set_title(preds_info['display_name'], fontsize=10, fontweight='bold')
-            
-            # 显示IoU
-            ax.text(
-                0.5, 0.02, f'IoU: {iou:.3f}',
-                transform=ax.transAxes,
-                ha='center', va='bottom',
-                fontsize=8,
-                color='white',
-                bbox=dict(boxstyle='round', facecolor='black', alpha=0.7)
-            )
     
     plt.suptitle(fig_title, fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
