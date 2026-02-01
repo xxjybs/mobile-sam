@@ -212,7 +212,14 @@ def pred_sam2(testdataloader, model, val_img_list, pred_path, gt_folder, inp_siz
                 
                 # 保存预测结果
                 img_name = val_img_list[idx]
-                save_name = img_name.replace('.jpg', '.png').replace('.JPG', '.png')
+                # 确保有正确的扩展名
+                if not img_name.endswith('.png'):
+                    if img_name.endswith('.jpg') or img_name.endswith('.JPG'):
+                        save_name = img_name.replace('.jpg', '.png').replace('.JPG', '.png')
+                    else:
+                        save_name = f"{img_name}.png"
+                else:
+                    save_name = img_name
                 cv2.imwrite(os.path.join(pred_path, save_name), pred_mask)
                 
                 # 计算 IoU
