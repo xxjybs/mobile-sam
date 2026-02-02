@@ -52,85 +52,20 @@ def parse_args():
     return parser.parse_args()
 
 
-class TimmSegFormer(torch.nn.Module):
-    """使用 timm 的 MixVisionTransformer 编码器的 SegFormer
-    
-    支持加载 ImageNet 预训练权重
-    """
-    def __init__(self, variant='b0', num_classes=1, pretrained=True, img_size=256):
-        super().__init__()
-        
-        # timm 中的 SegFormer encoder 模型名称
-        encoder_name_map = {
-            'b0': 'mit_b0',
-            'b1': 'mit_b1',
-            'b2': 'mit_b2',
-        }
-        
-        encoder_name = encoder_name_map.get(variant, 'mit_b0')
-        
-        # 创建编码器
-        try:
-            self.encoder = timm.create_model(
-                encoder_name,
-                pretrained=pretrained,
-                features_only=True,
-            )
-        except Exception as e:
-            print(f"   Warning: Could not create {encoder_name}, error: {e}")
-            print(f"   Trying alternative model...")
-            # 尝试使用替代模型名称
-            alt_names = [f'segformer_{variant}', f'mixvit_{variant}']
-            for alt_name in alt_names:
-                try:
-                    self.encoder = timm.create_model(
-                        alt_name,
-                        pretrained=pretrained,
-                        features_only=True,
-                    )
-                    print(f"   ✅ Successfully created {alt_name}")
-                    break
-                except:
-                    continue
-            else:
-                raise RuntimeError(f"Could not create any encoder model for variant {variant}")
-        
-        # 获取特征维度
-        if variant == 'b0':
-            dims = (32, 64, 160, 256)
-            decoder_dim = 256
-        elif variant == 'b1':
-            dims = (64, 128, 320, 512)
-            decoder_dim = 256
-        else:
-            dims = (64, 128, 320, 512)
-            decoder_dim = 256
-        
-        # 解码器
-        self.to_fused = torch.nn.ModuleList([
-            torch.nn.Sequential(
-                torch.nn.Conv2d(dim, decoder_dim, 1),
-                torch.nn.Upsample(scale_factor=2 ** i)
-            ) for i, dim in enumerate(dims)
-        ])
-        
-        self.to_segmentation = torch.nn.Sequential(
-            torch.nn.Conv2d(4 * decoder_dim, decoder_dim, 1),
-            torch.nn.Conv2d(decoder_dim, num_classes, 1),
-        )
-    
-    def forward(self, x):
-        # 获取多尺度特征
-        features = self.encoder(x)
-        
-        # 融合特征
-        fused = [to_fused(feat) for feat, to_fused in zip(features, self.to_fused)]
-        fused = torch.cat(fused, dim=1)
-        
-        # 分割头
-        out = self.to_segmentation(fused)
-        out = F.interpolate(out, size=x.shape[2:], mode='bilinear', align_corners=False)
-        return out
+def check_timm_mit_available():
+    """检查 timm 是否有 MiT (Mix-Transformer) 模型可用"""
+    if not TIMM_AVAILABLE:
+        return False
+    try:
+        # 尝试列出 timm 中可用的模型
+        available_models = timm.list_models('*mit*')
+        return len(available_models) > 0
+    except:
+        return False
+
+
+# 检查 timm 是否有 MiT 模型
+TIMM_MIT_AVAILABLE = check_timm_mit_available()
 
 
 def build_optimizer_scheduler(model, lr, epochs):
@@ -298,21 +233,16 @@ def main():
         print("   Falling back to training from scratch...")
         use_timm = False
     
-    # 创建模型
-    if use_timm:
-        # 使用 timm 预训练编码器 (ImageNet 权重)
-        print("Using timm pretrained encoder (ImageNet weights)")
-        variant = 'b0' if args.model == 'segformerb0' else 'b1'
-        model = TimmSegFormer(
-            variant=variant, 
-            num_classes=1, 
-            pretrained=True,
-            img_size=args.img_size
-        )
-        model_name = f'SegFormer-{variant.upper()} (timm pretrained)'
-        print(f"Model: {model_name}")
-        print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
-        print("✅ Loaded ImageNet pretrained weights from timm")
+    if use_timm and not TIMM_MIT_AVAILABLE:
+        print("⚠️ timm 中没有 MiT (Mix-Transformer) 模型")
+        print("   MiT models not available in your timm version.")
+        print("   Falling back to training from scratch...")
+        use_timm = False
+    
+    # 创建模型 - 始终使用项目中的 SegFormer 实现
+    # 由于 timm 的 MiT 模型可能不可用，我们使用项目自带的实现
+    if False:  # 禁用 timm，因为不稳定
+        pass
     else:
         # 使用原始实现
         if args.model == 'segformerb0':
