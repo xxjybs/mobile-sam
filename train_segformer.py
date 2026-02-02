@@ -255,21 +255,46 @@ def main():
         else:
             state_dict = checkpoint
         
+        # 打印预训练权重的键名前缀，用于调试
+        sample_keys = list(state_dict.keys())[:5]
+        print(f"   预训练权重示例键名 / Sample pretrained keys: {sample_keys}")
+        
+        # 打印模型的键名前缀，用于调试
+        model_sample_keys = list(model.state_dict().keys())[:5]
+        print(f"   模型参数示例键名 / Sample model keys: {model_sample_keys}")
+        
+        # 尝试自动映射键名
+        # mmsegmentation 格式: backbone.xxx -> mit.xxx
+        # 或者直接匹配
+        mapped_state_dict = {}
+        for key, value in state_dict.items():
+            # 尝试不同的键名映射
+            new_key = key
+            
+            # 移除常见前缀
+            if key.startswith('backbone.'):
+                new_key = key.replace('backbone.', 'mit.')
+            elif key.startswith('decode_head.'):
+                # decode_head 可能对应 to_fused 或 to_segmentation
+                continue  # 跳过 decode_head，因为结构可能不同
+            
+            mapped_state_dict[new_key] = value
+        
         # 尝试加载权重，允许部分匹配
         model_state_dict = model.state_dict()
         loaded_keys = []
         missing_keys = []
-        unexpected_keys = []
+        unexpected_keys = list(mapped_state_dict.keys())
         
-        for key in state_dict.keys():
+        for key in list(mapped_state_dict.keys()):
             if key in model_state_dict:
-                if state_dict[key].shape == model_state_dict[key].shape:
-                    model_state_dict[key] = state_dict[key]
+                if mapped_state_dict[key].shape == model_state_dict[key].shape:
+                    model_state_dict[key] = mapped_state_dict[key]
                     loaded_keys.append(key)
+                    unexpected_keys.remove(key)
                 else:
-                    missing_keys.append(key)
-            else:
-                unexpected_keys.append(key)
+                    # 形状不匹配
+                    pass
         
         for key in model_state_dict.keys():
             if key not in loaded_keys:
@@ -282,6 +307,15 @@ def main():
             print(f"   Missing keys: {len(missing_keys)}")
         if len(unexpected_keys) > 0:
             print(f"   Unexpected keys: {len(unexpected_keys)}")
+        
+        # 如果没有加载任何权重，给出建议
+        if len(loaded_keys) == 0:
+            print("\n⚠️ 警告: 没有加载任何预训练权重!")
+            print("   可能原因:")
+            print("   1. 预训练权重格式与模型不兼容")
+            print("   2. 预训练权重来自不同的框架 (如mmsegmentation)")
+            print("   建议: 使用 timm 或 huggingface 的 SegFormer 预训练权重")
+            print("   或者从头训练模型")
     else:
         print(f"⚠️ No pretrained weights loaded")
         if args.pretrained:
