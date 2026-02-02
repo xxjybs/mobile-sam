@@ -70,12 +70,30 @@ class TimmSegFormer(torch.nn.Module):
         encoder_name = encoder_name_map.get(variant, 'mit_b0')
         
         # 创建编码器
-        self.encoder = timm.create_model(
-            encoder_name,
-            pretrained=pretrained,
-            features_only=True,
-            img_size=img_size,
-        )
+        try:
+            self.encoder = timm.create_model(
+                encoder_name,
+                pretrained=pretrained,
+                features_only=True,
+            )
+        except Exception as e:
+            print(f"   Warning: Could not create {encoder_name}, error: {e}")
+            print(f"   Trying alternative model...")
+            # 尝试使用替代模型名称
+            alt_names = [f'segformer_{variant}', f'mixvit_{variant}']
+            for alt_name in alt_names:
+                try:
+                    self.encoder = timm.create_model(
+                        alt_name,
+                        pretrained=pretrained,
+                        features_only=True,
+                    )
+                    print(f"   ✅ Successfully created {alt_name}")
+                    break
+                except:
+                    continue
+            else:
+                raise RuntimeError(f"Could not create any encoder model for variant {variant}")
         
         # 获取特征维度
         if variant == 'b0':
