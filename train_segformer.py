@@ -5,6 +5,9 @@ SegFormer Training Script for Orange Defect Segmentation
 Usage:
     python train_segformer.py --model segformerb0
     python train_segformer.py --model segformerb1
+    
+    # 使用 timm 预训练编码器（推荐，ImageNet 预训练）
+    python train_segformer.py --model segformerb0 --use_timm_pretrained
 """
 
 import os
@@ -23,6 +26,13 @@ from helper.loss import IOU, DiceLoss
 import random
 import shutil
 
+# 尝试导入 timm
+try:
+    import timm
+    TIMM_AVAILABLE = True
+except ImportError:
+    TIMM_AVAILABLE = False
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train SegFormer on Orange Defect Dataset')
@@ -36,8 +46,73 @@ def parse_args():
     parser.add_argument('--use_oversampling', action='store_true', default=True,
                         help='Use oversampling for large defect samples')
     parser.add_argument('--pretrained', type=str, default='',
-                        help='Path to pretrained checkpoint (default: ./checkpoints/segformerb0.pt or segformerb1.pt)')
+                        help='Path to pretrained checkpoint')
+    parser.add_argument('--use_timm_pretrained', action='store_true', default=False,
+                        help='Use timm pretrained encoder (ImageNet weights, recommended)')
     return parser.parse_args()
+
+
+class TimmSegFormer(torch.nn.Module):
+    """使用 timm 的 MixVisionTransformer 编码器的 SegFormer
+    
+    支持加载 ImageNet 预训练权重
+    """
+    def __init__(self, variant='b0', num_classes=1, pretrained=True, img_size=256):
+        super().__init__()
+        
+        # timm 中的 SegFormer encoder 模型名称
+        encoder_name_map = {
+            'b0': 'mit_b0',
+            'b1': 'mit_b1',
+            'b2': 'mit_b2',
+        }
+        
+        encoder_name = encoder_name_map.get(variant, 'mit_b0')
+        
+        # 创建编码器
+        self.encoder = timm.create_model(
+            encoder_name,
+            pretrained=pretrained,
+            features_only=True,
+            img_size=img_size,
+        )
+        
+        # 获取特征维度
+        if variant == 'b0':
+            dims = (32, 64, 160, 256)
+            decoder_dim = 256
+        elif variant == 'b1':
+            dims = (64, 128, 320, 512)
+            decoder_dim = 256
+        else:
+            dims = (64, 128, 320, 512)
+            decoder_dim = 256
+        
+        # 解码器
+        self.to_fused = torch.nn.ModuleList([
+            torch.nn.Sequential(
+                torch.nn.Conv2d(dim, decoder_dim, 1),
+                torch.nn.Upsample(scale_factor=2 ** i)
+            ) for i, dim in enumerate(dims)
+        ])
+        
+        self.to_segmentation = torch.nn.Sequential(
+            torch.nn.Conv2d(4 * decoder_dim, decoder_dim, 1),
+            torch.nn.Conv2d(decoder_dim, num_classes, 1),
+        )
+    
+    def forward(self, x):
+        # 获取多尺度特征
+        features = self.encoder(x)
+        
+        # 融合特征
+        fused = [to_fused(feat) for feat, to_fused in zip(features, self.to_fused)]
+        fused = torch.cat(fused, dim=1)
+        
+        # 分割头
+        out = self.to_segmentation(fused)
+        out = F.interpolate(out, size=x.shape[2:], mode='bilinear', align_corners=False)
+        return out
 
 
 def build_optimizer_scheduler(model, lr, epochs):
@@ -198,134 +273,151 @@ def main():
     set_seed(seed=args.seed, deterministic=True)
     cleanup()
     
+    # 决定是否使用 timm 预训练
+    use_timm = args.use_timm_pretrained
+    if use_timm and not TIMM_AVAILABLE:
+        print("⚠️ timm not installed. Install with: pip install timm")
+        print("   Falling back to training from scratch...")
+        use_timm = False
+    
     # 创建模型
-    if args.model == 'segformerb0':
-        model = make_SegFormerB0(num_classes=1)
-        model_name = 'SegFormerB0'
-        # 检查多个可能的预训练权重路径
-        possible_paths = [
-            './checkpoints/segformerb0.pt',
-            './checkpoint/segformerb0.pt',
-            './checkpoints/segformer_b0.pt',
-            './checkpoint/segformer_b0.pt',
-            './checkpoints/segformer_b0_ade.pt',
-            './checkpoint/segformer_b0_ade.pt',
-            './checkpoints/segformer.b0.ade.pth',
-            './checkpoint/segformer.b0.ade.pth',
-        ]
+    if use_timm:
+        # 使用 timm 预训练编码器 (ImageNet 权重)
+        print("Using timm pretrained encoder (ImageNet weights)")
+        variant = 'b0' if args.model == 'segformerb0' else 'b1'
+        model = TimmSegFormer(
+            variant=variant, 
+            num_classes=1, 
+            pretrained=True,
+            img_size=args.img_size
+        )
+        model_name = f'SegFormer-{variant.upper()} (timm pretrained)'
+        print(f"Model: {model_name}")
+        print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
+        print("✅ Loaded ImageNet pretrained weights from timm")
     else:
-        model = make_SegFormerB1(num_classes=1)
-        model_name = 'SegFormerB1'
-        # 检查多个可能的预训练权重路径
-        possible_paths = [
-            './checkpoints/segformerb1.pt',
-            './checkpoint/segformerb1.pt',
-            './checkpoints/segformer_b1.pt',
-            './checkpoint/segformer_b1.pt',
-            './checkpoints/segformer_b1_ade.pt',
-            './checkpoint/segformer_b1_ade.pt',
-            './checkpoints/segformer.b1.ade.pth',
-            './checkpoint/segformer.b1.ade.pth',
-        ]
-    
-    # 自动查找存在的预训练权重
-    default_pretrained = None
-    for path in possible_paths:
-        if os.path.exists(path):
-            default_pretrained = path
-            break
-    
-    print(f"Model: {model_name}")
-    print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
-    
-    # 加载预训练权重 / Load pretrained weights
-    pretrained_path = args.pretrained if args.pretrained else default_pretrained
-    if pretrained_path and os.path.exists(pretrained_path):
-        print(f"Loading pretrained weights from: {pretrained_path}")
-        checkpoint = torch.load(pretrained_path, map_location='cpu')
+        # 使用原始实现
+        if args.model == 'segformerb0':
+            model = make_SegFormerB0(num_classes=1)
+            model_name = 'SegFormerB0'
+            # 检查多个可能的预训练权重路径
+            possible_paths = [
+                './checkpoints/segformerb0.pt',
+                './checkpoint/segformerb0.pt',
+                './checkpoints/segformer_b0.pt',
+                './checkpoint/segformer_b0.pt',
+                './checkpoints/segformer_b0_ade.pt',
+                './checkpoint/segformer_b0_ade.pt',
+                './checkpoints/segformer.b0.ade.pth',
+                './checkpoint/segformer.b0.ade.pth',
+            ]
+        else:
+            model = make_SegFormerB1(num_classes=1)
+            model_name = 'SegFormerB1'
+            # 检查多个可能的预训练权重路径
+            possible_paths = [
+                './checkpoints/segformerb1.pt',
+                './checkpoint/segformerb1.pt',
+                './checkpoints/segformer_b1.pt',
+                './checkpoint/segformer_b1.pt',
+                './checkpoints/segformer_b1_ade.pt',
+                './checkpoint/segformer_b1_ade.pt',
+                './checkpoints/segformer.b1.ade.pth',
+                './checkpoint/segformer.b1.ade.pth',
+            ]
         
-        # 处理不同的 checkpoint 格式
-        if isinstance(checkpoint, dict):
-            if 'model' in checkpoint:
-                state_dict = checkpoint['model']
-            elif 'state_dict' in checkpoint:
-                state_dict = checkpoint['state_dict']
+        # 自动查找存在的预训练权重
+        default_pretrained = None
+        for path in possible_paths:
+            if os.path.exists(path):
+                default_pretrained = path
+                break
+        
+        print(f"Model: {model_name}")
+        print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
+        
+        # 加载预训练权重 / Load pretrained weights
+        pretrained_path = args.pretrained if args.pretrained else default_pretrained
+        if pretrained_path and os.path.exists(pretrained_path):
+            print(f"Loading pretrained weights from: {pretrained_path}")
+            checkpoint = torch.load(pretrained_path, map_location='cpu')
+            
+            # 处理不同的 checkpoint 格式
+            if isinstance(checkpoint, dict):
+                if 'model' in checkpoint:
+                    state_dict = checkpoint['model']
+                elif 'state_dict' in checkpoint:
+                    state_dict = checkpoint['state_dict']
+                else:
+                    state_dict = checkpoint
             else:
                 state_dict = checkpoint
-        else:
-            state_dict = checkpoint
-        
-        # 打印预训练权重的键名前缀，用于调试
-        sample_keys = list(state_dict.keys())[:5]
-        print(f"   预训练权重示例键名 / Sample pretrained keys: {sample_keys}")
-        
-        # 打印模型的键名前缀，用于调试
-        model_sample_keys = list(model.state_dict().keys())[:5]
-        print(f"   模型参数示例键名 / Sample model keys: {model_sample_keys}")
-        
-        # 尝试自动映射键名
-        # mmsegmentation 格式: backbone.xxx -> mit.xxx
-        # 或者直接匹配
-        mapped_state_dict = {}
-        for key, value in state_dict.items():
-            # 尝试不同的键名映射
-            new_key = key
             
-            # 移除常见前缀
-            if key.startswith('backbone.'):
-                new_key = key.replace('backbone.', 'mit.')
-            elif key.startswith('decode_head.'):
-                # decode_head 可能对应 to_fused 或 to_segmentation
-                continue  # 跳过 decode_head，因为结构可能不同
+            # 打印预训练权重的键名前缀，用于调试
+            sample_keys = list(state_dict.keys())[:5]
+            print(f"   预训练权重示例键名 / Sample pretrained keys: {sample_keys}")
             
-            mapped_state_dict[new_key] = value
-        
-        # 尝试加载权重，允许部分匹配
-        model_state_dict = model.state_dict()
-        loaded_keys = []
-        missing_keys = []
-        unexpected_keys = list(mapped_state_dict.keys())
-        
-        for key in list(mapped_state_dict.keys()):
-            if key in model_state_dict:
-                if mapped_state_dict[key].shape == model_state_dict[key].shape:
-                    model_state_dict[key] = mapped_state_dict[key]
-                    loaded_keys.append(key)
-                    unexpected_keys.remove(key)
-                else:
-                    # 形状不匹配
-                    pass
-        
-        for key in model_state_dict.keys():
-            if key not in loaded_keys:
-                missing_keys.append(key)
-        
-        model.load_state_dict(model_state_dict, strict=False)
-        
-        print(f"✅ Loaded {len(loaded_keys)}/{len(model_state_dict)} parameters from pretrained checkpoint")
-        if len(missing_keys) > 0:
-            print(f"   Missing keys: {len(missing_keys)}")
-        if len(unexpected_keys) > 0:
-            print(f"   Unexpected keys: {len(unexpected_keys)}")
-        
-        # 如果没有加载任何权重，给出建议
-        if len(loaded_keys) == 0:
-            print("\n⚠️ 警告: 没有加载任何预训练权重!")
-            print("   可能原因:")
-            print("   1. 预训练权重格式与模型不兼容")
-            print("   2. 预训练权重来自不同的框架 (如mmsegmentation)")
-            print("   建议: 使用 timm 或 huggingface 的 SegFormer 预训练权重")
-            print("   或者从头训练模型")
-    else:
-        print(f"⚠️ No pretrained weights loaded")
-        if args.pretrained:
-            print(f"   Specified path not found: {args.pretrained}")
+            # 打印模型的键名前缀，用于调试
+            model_sample_keys = list(model.state_dict().keys())[:5]
+            print(f"   模型参数示例键名 / Sample model keys: {model_sample_keys}")
+            
+            # 尝试自动映射键名
+            # mmsegmentation 格式: backbone.xxx -> mit.xxx
+            # 或者直接匹配
+            mapped_state_dict = {}
+            for key, value in state_dict.items():
+                # 尝试不同的键名映射
+                new_key = key
+                
+                # 移除常见前缀
+                if key.startswith('backbone.'):
+                    new_key = key.replace('backbone.', 'mit.')
+                elif key.startswith('decode_head.'):
+                    # decode_head 可能对应 to_fused 或 to_segmentation
+                    continue  # 跳过 decode_head，因为结构可能不同
+                
+                mapped_state_dict[new_key] = value
+            
+            # 尝试加载权重，允许部分匹配
+            model_state_dict = model.state_dict()
+            loaded_keys = []
+            missing_keys = []
+            unexpected_keys = list(mapped_state_dict.keys())
+            
+            for key in list(mapped_state_dict.keys()):
+                if key in model_state_dict:
+                    if mapped_state_dict[key].shape == model_state_dict[key].shape:
+                        model_state_dict[key] = mapped_state_dict[key]
+                        loaded_keys.append(key)
+                        unexpected_keys.remove(key)
+                    else:
+                        # 形状不匹配
+                        pass
+            
+            for key in model_state_dict.keys():
+                if key not in loaded_keys:
+                    missing_keys.append(key)
+            
+            model.load_state_dict(model_state_dict, strict=False)
+            
+            print(f"✅ Loaded {len(loaded_keys)}/{len(model_state_dict)} parameters from pretrained checkpoint")
+            if len(missing_keys) > 0:
+                print(f"   Missing keys: {len(missing_keys)}")
+            if len(unexpected_keys) > 0:
+                print(f"   Unexpected keys: {len(unexpected_keys)}")
+            
+            # 如果没有加载任何权重，给出建议
+            if len(loaded_keys) == 0:
+                print("\n⚠️ 警告: 没有加载任何预训练权重!")
+                print("   可能原因: 预训练权重格式与模型不兼容 (来自不同的框架)")
+                print("   💡 建议: 使用 --use_timm_pretrained 加载 ImageNet 预训练权重")
+                print("         例如: python train_segformer.py --model segformerb0 --use_timm_pretrained")
         else:
-            print(f"   Checked paths (none exist):")
-            for p in possible_paths[:4]:  # 只显示前4个
-                print(f"     - {p}")
-        print("   Training from scratch...")
-        print("   💡 提示: 可以使用 --pretrained 参数指定预训练权重路径")
+            print(f"⚠️ No pretrained weights loaded")
+            if args.pretrained:
+                print(f"   Specified path not found: {args.pretrained}")
+            print("   Training from scratch...")
+            print("   💡 提示: 使用 --use_timm_pretrained 可加载 ImageNet 预训练权重")
     
     # 损失函数
     criterion_bce = torch.nn.BCEWithLogitsLoss()
