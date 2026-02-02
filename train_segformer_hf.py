@@ -99,14 +99,15 @@ class HFSegFormerWrapper(torch.nn.Module):
         
         print(f"   Model variant: SegFormer-{variant.upper()}")
         
-        # 优先使用本地权重文件
+        # 优先使用本地权重文件 - 完全离线模式
         if local_weights and os.path.exists(local_weights):
-            print(f"   Loading local HuggingFace weights from: {local_weights}")
-            self._create_from_config(variant, num_classes)
+            print(f"   Loading local weights from: {local_weights}")
+            print(f"   使用本地配置创建模型 (无需网络)")
+            self._create_from_local_config(variant, num_classes)
             self._load_local_weights(local_weights)
         elif offline:
-            print(f"   离线模式: 从配置创建模型 (随机初始化)")
-            self._create_from_config(variant, num_classes)
+            print(f"   离线模式: 从本地配置创建模型 (随机初始化)")
+            self._create_from_local_config(variant, num_classes)
         else:
             try:
                 print(f"   Loading pretrained model from HuggingFace: {model_name}")
@@ -160,6 +161,66 @@ class HFSegFormerWrapper(torch.nn.Module):
             print(f"   ⚠️ Error loading local weights: {e}")
             print(f"   将使用随机初始化")
     
+    def _create_from_local_config(self, variant, num_classes):
+        """从本地配置创建模型（完全离线，不访问网络）"""
+        # SegFormer 配置参数
+        configs = {
+            'b0': {
+                'depths': [2, 2, 2, 2],
+                'hidden_sizes': [32, 64, 160, 256],
+                'num_attention_heads': [1, 2, 5, 8],
+                'decoder_hidden_size': 256,
+            },
+            'b1': {
+                'depths': [2, 2, 2, 2],
+                'hidden_sizes': [64, 128, 320, 512],
+                'num_attention_heads': [1, 2, 5, 8],
+                'decoder_hidden_size': 256,
+            },
+            'b2': {
+                'depths': [3, 4, 6, 3],
+                'hidden_sizes': [64, 128, 320, 512],
+                'num_attention_heads': [1, 2, 5, 8],
+                'decoder_hidden_size': 768,
+            },
+            'b3': {
+                'depths': [3, 4, 18, 3],
+                'hidden_sizes': [64, 128, 320, 512],
+                'num_attention_heads': [1, 2, 5, 8],
+                'decoder_hidden_size': 768,
+            },
+            'b4': {
+                'depths': [3, 8, 27, 3],
+                'hidden_sizes': [64, 128, 320, 512],
+                'num_attention_heads': [1, 2, 5, 8],
+                'decoder_hidden_size': 768,
+            },
+            'b5': {
+                'depths': [3, 6, 40, 3],
+                'hidden_sizes': [64, 128, 320, 512],
+                'num_attention_heads': [1, 2, 5, 8],
+                'decoder_hidden_size': 768,
+            },
+        }
+        
+        cfg = configs.get(variant, configs['b0'])
+        
+        config = SegformerConfig(
+            num_channels=3,
+            num_encoder_blocks=4,
+            depths=cfg['depths'],
+            sr_ratios=[8, 4, 2, 1],
+            hidden_sizes=cfg['hidden_sizes'],
+            num_attention_heads=cfg['num_attention_heads'],
+            patch_sizes=[7, 3, 3, 3],
+            strides=[4, 2, 2, 2],
+            mlp_ratios=[4, 4, 4, 4],
+            num_labels=num_classes,
+            decoder_hidden_size=cfg['decoder_hidden_size'],
+        )
+        self.model = SegformerForSemanticSegmentation(config)
+        print(f"   ✅ Created SegFormer-{variant.upper()} from local config")
+    
     def _create_from_config(self, variant, num_classes):
         """从配置创建模型（用于离线模式或加载失败时）"""
         try:
@@ -170,23 +231,7 @@ class HFSegFormerWrapper(torch.nn.Module):
         except Exception as e2:
             print(f"   ⚠️ 无法从 HuggingFace 获取配置: {e2}")
             print(f"   正在使用本地配置创建模型...")
-            
-            # 完全离线创建模型
-            config = SegformerConfig(
-                num_channels=3,
-                num_encoder_blocks=4,
-                depths=[2, 2, 2, 2] if variant == 'b0' else [2, 2, 2, 2],
-                sr_ratios=[8, 4, 2, 1],
-                hidden_sizes=[32, 64, 160, 256] if variant == 'b0' else [64, 128, 320, 512],
-                num_attention_heads=[1, 2, 5, 8] if variant == 'b0' else [1, 2, 5, 8],
-                patch_sizes=[7, 3, 3, 3],
-                strides=[4, 2, 2, 2],
-                mlp_ratios=[4, 4, 4, 4],
-                num_labels=num_classes,
-                decoder_hidden_size=256 if variant == 'b0' else 512,
-            )
-            self.model = SegformerForSemanticSegmentation(config)
-            print(f"   ✅ Created model from local config (random initialization)")
+            self._create_from_local_config(variant, num_classes)
     
     def forward(self, x):
         """
