@@ -46,7 +46,7 @@ except ImportError:
 def parse_args():
     parser = argparse.ArgumentParser(description='Train HuggingFace SegFormer on Orange Defect Dataset')
     parser.add_argument('--model', type=str, default='nvidia/mit-b0',
-                        help='HuggingFace model name (e.g., nvidia/mit-b0, nvidia/mit-b1, nvidia/segformer-b0-finetuned-ade-512-512)')
+                        help='HuggingFace model name (e.g., nvidia/mit-b0, nvidia/mit-b1)')
     parser.add_argument('--epochs', type=int, default=500, help='Number of training epochs')
     parser.add_argument('--batch_size', type=int, default=4, help='Batch size')
     parser.add_argument('--lr', type=float, default=1e-4, help='Initial learning rate')
@@ -57,6 +57,8 @@ def parse_args():
     parser.add_argument('--save_dir', type=str, default='./save/segformer_hf',
                         help='Directory to save checkpoints')
     parser.add_argument('--num_classes', type=int, default=2, help='Number of classes (2 for binary segmentation)')
+    parser.add_argument('--offline', action='store_true', default=False,
+                        help='Use offline mode (no network access)')
     return parser.parse_args()
 
 
@@ -64,10 +66,18 @@ class HFSegFormerWrapper(torch.nn.Module):
     """
     HuggingFace SegFormer 包装类，输出格式与项目其他模型一致
     """
-    def __init__(self, model_name='nvidia/mit-b0', num_classes=2, img_size=256):
+    def __init__(self, model_name='nvidia/mit-b0', num_classes=2, img_size=256, offline=False):
         super().__init__()
         self.img_size = img_size
         self.num_classes = num_classes
+        
+        # 验证模型名是否是 HuggingFace 格式
+        if model_name.startswith('./') or model_name.startswith('/') or model_name.endswith('.pth') or model_name.endswith('.pt'):
+            print(f"   ⚠️ 检测到本地路径格式: {model_name}")
+            print(f"   ⚠️ 本脚本需要 HuggingFace 模型名称 (如 nvidia/mit-b0)")
+            print(f"   ⚠️ 如需使用本地 mmseg 权重，请使用 train_segformer.py")
+            print(f"   ⚠️ 将尝试从配置创建模型...")
+            model_name = 'nvidia/mit-b0'  # 回退到默认
         
         # 获取模型变体
         if 'b0' in model_name.lower():
@@ -88,23 +98,50 @@ class HFSegFormerWrapper(torch.nn.Module):
         print(f"   Model variant: SegFormer-{variant.upper()}")
         
         # 尝试加载预训练模型
+        if offline:
+            print(f"   离线模式: 从配置创建模型 (随机初始化)")
+            self._create_from_config(variant, num_classes)
+        else:
+            try:
+                print(f"   Loading pretrained model from HuggingFace: {model_name}")
+                self.model = SegformerForSemanticSegmentation.from_pretrained(
+                    model_name,
+                    num_labels=num_classes,
+                    ignore_mismatched_sizes=True  # 忽略分类头大小不匹配
+                )
+                print(f"   ✅ Loaded pretrained weights from: {model_name}")
+            except Exception as e:
+                print(f"   ⚠️ Cannot load pretrained: {e}")
+                print(f"   Creating model from config...")
+                self._create_from_config(variant, num_classes)
+    
+    def _create_from_config(self, variant, num_classes):
+        """从配置创建模型（用于离线模式或加载失败时）"""
         try:
-            print(f"   Loading pretrained model from HuggingFace: {model_name}")
-            self.model = SegformerForSemanticSegmentation.from_pretrained(
-                model_name,
-                num_labels=num_classes,
-                ignore_mismatched_sizes=True  # 忽略分类头大小不匹配
-            )
-            print(f"   ✅ Loaded pretrained weights from: {model_name}")
-        except Exception as e:
-            print(f"   ⚠️ Cannot load pretrained: {e}")
-            print(f"   Creating model from config...")
-            
-            # 使用配置创建模型
             config = SegformerConfig.from_pretrained(f'nvidia/mit-{variant}')
             config.num_labels = num_classes
             self.model = SegformerForSemanticSegmentation(config)
             print(f"   ✅ Created model from config (random initialization)")
+        except Exception as e2:
+            print(f"   ⚠️ 无法从 HuggingFace 获取配置: {e2}")
+            print(f"   正在使用本地配置创建模型...")
+            
+            # 完全离线创建模型
+            config = SegformerConfig(
+                num_channels=3,
+                num_encoder_blocks=4,
+                depths=[2, 2, 2, 2] if variant == 'b0' else [2, 2, 2, 2],
+                sr_ratios=[8, 4, 2, 1],
+                hidden_sizes=[32, 64, 160, 256] if variant == 'b0' else [64, 128, 320, 512],
+                num_attention_heads=[1, 2, 5, 8] if variant == 'b0' else [1, 2, 5, 8],
+                patch_sizes=[7, 3, 3, 3],
+                strides=[4, 2, 2, 2],
+                mlp_ratios=[4, 4, 4, 4],
+                num_labels=num_classes,
+                decoder_hidden_size=256 if variant == 'b0' else 512,
+            )
+            self.model = SegformerForSemanticSegmentation(config)
+            print(f"   ✅ Created model from local config (random initialization)")
     
     def forward(self, x):
         """
@@ -294,7 +331,8 @@ def main():
     model = HFSegFormerWrapper(
         model_name=args.model,
         num_classes=args.num_classes,
-        img_size=args.img_size
+        img_size=args.img_size,
+        offline=args.offline
     )
     model = model.to(device)
     
