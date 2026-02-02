@@ -292,7 +292,7 @@ def train_one_epoch(model, dataloader, optimizer, criterion_bce, criterion_iou, 
     model.train()
     losses = []
     
-    for batch_idx, (images, masks) in enumerate(dataloader):
+    for batch_idx, (images, masks, _) in enumerate(dataloader):
         images = images.to(device)
         masks = masks.to(device)
         
@@ -338,7 +338,7 @@ def validate(model, dataloader, criterion_bce, criterion_iou, device):
     all_fg_ious = []
     
     with torch.no_grad():
-        for images, masks in dataloader:
+        for images, masks, _ in dataloader:
             images = images.to(device)
             masks = masks.to(device)
             
@@ -380,7 +380,7 @@ def predict_and_save(model, dataloader, save_dir, device, img_size):
     os.makedirs(save_dir, exist_ok=True)
     
     with torch.no_grad():
-        for idx, (images, _) in enumerate(dataloader):
+        for idx, (images, _, filenames) in enumerate(dataloader):
             images = images.to(device)
             logits = model(images)
             preds = (torch.sigmoid(logits) > 0.5).float()
