@@ -202,11 +202,38 @@ def main():
     if args.model == 'segformerb0':
         model = make_SegFormerB0(num_classes=1)
         model_name = 'SegFormerB0'
-        default_pretrained = './checkpoints/segformerb0.pt'
+        # 检查多个可能的预训练权重路径
+        possible_paths = [
+            './checkpoints/segformerb0.pt',
+            './checkpoint/segformerb0.pt',
+            './checkpoints/segformer_b0.pt',
+            './checkpoint/segformer_b0.pt',
+            './checkpoints/segformer_b0_ade.pt',
+            './checkpoint/segformer_b0_ade.pt',
+            './checkpoints/segformer.b0.ade.pth',
+            './checkpoint/segformer.b0.ade.pth',
+        ]
     else:
         model = make_SegFormerB1(num_classes=1)
         model_name = 'SegFormerB1'
-        default_pretrained = './checkpoints/segformerb1.pt'
+        # 检查多个可能的预训练权重路径
+        possible_paths = [
+            './checkpoints/segformerb1.pt',
+            './checkpoint/segformerb1.pt',
+            './checkpoints/segformer_b1.pt',
+            './checkpoint/segformer_b1.pt',
+            './checkpoints/segformer_b1_ade.pt',
+            './checkpoint/segformer_b1_ade.pt',
+            './checkpoints/segformer.b1.ade.pth',
+            './checkpoint/segformer.b1.ade.pth',
+        ]
+    
+    # 自动查找存在的预训练权重
+    default_pretrained = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            default_pretrained = path
+            break
     
     print(f"Model: {model_name}")
     print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
@@ -256,8 +283,15 @@ def main():
         if len(unexpected_keys) > 0:
             print(f"   Unexpected keys: {len(unexpected_keys)}")
     else:
-        print(f"⚠️ No pretrained weights loaded (path: {pretrained_path})")
+        print(f"⚠️ No pretrained weights loaded")
+        if args.pretrained:
+            print(f"   Specified path not found: {args.pretrained}")
+        else:
+            print(f"   Checked paths (none exist):")
+            for p in possible_paths[:4]:  # 只显示前4个
+                print(f"     - {p}")
         print("   Training from scratch...")
+        print("   💡 提示: 可以使用 --pretrained 参数指定预训练权重路径")
     
     # 损失函数
     criterion_bce = torch.nn.BCEWithLogitsLoss()
