@@ -35,6 +35,8 @@ def parse_args():
     parser.add_argument('--seed', type=int, default=42, help='Random seed')
     parser.add_argument('--use_oversampling', action='store_true', default=True,
                         help='Use oversampling for large defect samples')
+    parser.add_argument('--pretrained', type=str, default='',
+                        help='Path to pretrained checkpoint (default: ./checkpoints/segformerb0.pt or segformerb1.pt)')
     return parser.parse_args()
 
 
@@ -200,12 +202,62 @@ def main():
     if args.model == 'segformerb0':
         model = make_SegFormerB0(num_classes=1)
         model_name = 'SegFormerB0'
+        default_pretrained = './checkpoints/segformerb0.pt'
     else:
         model = make_SegFormerB1(num_classes=1)
         model_name = 'SegFormerB1'
+        default_pretrained = './checkpoints/segformerb1.pt'
     
     print(f"Model: {model_name}")
     print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
+    
+    # 加载预训练权重 / Load pretrained weights
+    pretrained_path = args.pretrained if args.pretrained else default_pretrained
+    if pretrained_path and os.path.exists(pretrained_path):
+        print(f"Loading pretrained weights from: {pretrained_path}")
+        checkpoint = torch.load(pretrained_path, map_location='cpu')
+        
+        # 处理不同的 checkpoint 格式
+        if isinstance(checkpoint, dict):
+            if 'model' in checkpoint:
+                state_dict = checkpoint['model']
+            elif 'state_dict' in checkpoint:
+                state_dict = checkpoint['state_dict']
+            else:
+                state_dict = checkpoint
+        else:
+            state_dict = checkpoint
+        
+        # 尝试加载权重，允许部分匹配
+        model_state_dict = model.state_dict()
+        loaded_keys = []
+        missing_keys = []
+        unexpected_keys = []
+        
+        for key in state_dict.keys():
+            if key in model_state_dict:
+                if state_dict[key].shape == model_state_dict[key].shape:
+                    model_state_dict[key] = state_dict[key]
+                    loaded_keys.append(key)
+                else:
+                    missing_keys.append(key)
+            else:
+                unexpected_keys.append(key)
+        
+        for key in model_state_dict.keys():
+            if key not in loaded_keys:
+                missing_keys.append(key)
+        
+        model.load_state_dict(model_state_dict, strict=False)
+        
+        print(f"✅ Loaded {len(loaded_keys)}/{len(model_state_dict)} parameters from pretrained checkpoint")
+        if len(missing_keys) > 0:
+            print(f"   Missing keys: {len(missing_keys)}")
+        if len(unexpected_keys) > 0:
+            print(f"   Unexpected keys: {len(unexpected_keys)}")
+    else:
+        print(f"⚠️ No pretrained weights loaded (path: {pretrained_path})")
+        print("   Training from scratch...")
     
     # 损失函数
     criterion_bce = torch.nn.BCEWithLogitsLoss()
