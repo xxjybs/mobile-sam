@@ -9,14 +9,14 @@ SegFormer Training Script using HuggingFace Transformers
     pip install transformers
 
 Usage:
-    # 使用 ImageNet 预训练权重（推荐）
+    # 方法1: 使用本地下载的权重文件 (推荐，无需网络)
+    python train_segformer_hf.py --model nvidia/mit-b0 --local_weights ./checkpoints/segformer_b0_ade.pt --offline
+    
+    # 方法2: 在线加载 HuggingFace 预训练权重
     python train_segformer_hf.py --model nvidia/segformer-b0-finetuned-ade-512-512
     
-    # 使用基础预训练（无 ADE20K 微调）
-    python train_segformer_hf.py --model nvidia/mit-b0
-    
-    # 指定保存路径
-    python train_segformer_hf.py --model nvidia/mit-b0 --save_dir ./save/segformer_hf
+    # 方法3: 离线模式，从头训练
+    python train_segformer_hf.py --model nvidia/mit-b0 --offline
 """
 
 import os
@@ -47,6 +47,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Train HuggingFace SegFormer on Orange Defect Dataset')
     parser.add_argument('--model', type=str, default='nvidia/mit-b0',
                         help='HuggingFace model name (e.g., nvidia/mit-b0, nvidia/mit-b1)')
+    parser.add_argument('--local_weights', type=str, default='',
+                        help='Path to local HuggingFace weights file (e.g., ./checkpoints/segformer_b0_ade.pt)')
     parser.add_argument('--epochs', type=int, default=500, help='Number of training epochs')
     parser.add_argument('--batch_size', type=int, default=4, help='Batch size')
     parser.add_argument('--lr', type=float, default=1e-4, help='Initial learning rate')
@@ -66,7 +68,7 @@ class HFSegFormerWrapper(torch.nn.Module):
     """
     HuggingFace SegFormer 包装类，输出格式与项目其他模型一致
     """
-    def __init__(self, model_name='nvidia/mit-b0', num_classes=2, img_size=256, offline=False):
+    def __init__(self, model_name='nvidia/mit-b0', num_classes=2, img_size=256, offline=False, local_weights=''):
         super().__init__()
         self.img_size = img_size
         self.num_classes = num_classes
@@ -97,8 +99,12 @@ class HFSegFormerWrapper(torch.nn.Module):
         
         print(f"   Model variant: SegFormer-{variant.upper()}")
         
-        # 尝试加载预训练模型
-        if offline:
+        # 优先使用本地权重文件
+        if local_weights and os.path.exists(local_weights):
+            print(f"   Loading local HuggingFace weights from: {local_weights}")
+            self._create_from_config(variant, num_classes)
+            self._load_local_weights(local_weights)
+        elif offline:
             print(f"   离线模式: 从配置创建模型 (随机初始化)")
             self._create_from_config(variant, num_classes)
         else:
@@ -114,6 +120,45 @@ class HFSegFormerWrapper(torch.nn.Module):
                 print(f"   ⚠️ Cannot load pretrained: {e}")
                 print(f"   Creating model from config...")
                 self._create_from_config(variant, num_classes)
+    
+    def _load_local_weights(self, weights_path):
+        """加载本地保存的 HuggingFace 权重文件"""
+        try:
+            state_dict = torch.load(weights_path, map_location='cpu')
+            
+            # 检查是否有 'model' 或 'state_dict' 键
+            if isinstance(state_dict, dict):
+                if 'model' in state_dict:
+                    state_dict = state_dict['model']
+                elif 'state_dict' in state_dict:
+                    state_dict = state_dict['state_dict']
+            
+            # 打印权重键名示例
+            keys = list(state_dict.keys())
+            print(f"   本地权重示例键名: {keys[:5]}")
+            
+            # 获取模型的键名
+            model_keys = list(self.model.state_dict().keys())
+            print(f"   模型参数示例键名: {model_keys[:5]}")
+            
+            # 尝试加载权重
+            result = self.model.load_state_dict(state_dict, strict=False)
+            loaded_count = len(model_keys) - len(result.missing_keys)
+            
+            if loaded_count > 0:
+                print(f"   ✅ Loaded {loaded_count}/{len(model_keys)} parameters from local weights")
+            else:
+                print(f"   ⚠️ No parameters loaded from local weights")
+                print(f"   权重格式可能与 HuggingFace SegFormer 不兼容")
+            
+            if result.missing_keys:
+                print(f"   Missing keys: {len(result.missing_keys)}")
+            if result.unexpected_keys:
+                print(f"   Unexpected keys: {len(result.unexpected_keys)}")
+                
+        except Exception as e:
+            print(f"   ⚠️ Error loading local weights: {e}")
+            print(f"   将使用随机初始化")
     
     def _create_from_config(self, variant, num_classes):
         """从配置创建模型（用于离线模式或加载失败时）"""
@@ -328,11 +373,14 @@ def main():
     
     # 创建模型
     print(f"\nCreating model: {args.model}")
+    if args.local_weights:
+        print(f"   Using local weights: {args.local_weights}")
     model = HFSegFormerWrapper(
         model_name=args.model,
         num_classes=args.num_classes,
         img_size=args.img_size,
-        offline=args.offline
+        offline=args.offline,
+        local_weights=args.local_weights
     )
     model = model.to(device)
     
