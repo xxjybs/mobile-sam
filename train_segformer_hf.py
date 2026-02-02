@@ -104,7 +104,7 @@ class HFSegFormerWrapper(torch.nn.Module):
             print(f"   Loading local weights from: {local_weights}")
             print(f"   使用本地配置创建模型 (无需网络)")
             self._create_from_local_config(variant, num_classes)
-            self._load_local_weights(local_weights)
+            self._load_local_weights(local_weights, num_classes)
         elif offline:
             print(f"   离线模式: 从本地配置创建模型 (随机初始化)")
             self._create_from_local_config(variant, num_classes)
@@ -122,7 +122,7 @@ class HFSegFormerWrapper(torch.nn.Module):
                 print(f"   Creating model from config...")
                 self._create_from_config(variant, num_classes)
     
-    def _load_local_weights(self, weights_path):
+    def _load_local_weights(self, weights_path, num_classes=2):
         """加载本地保存的 HuggingFace 权重文件"""
         try:
             state_dict = torch.load(weights_path, map_location='cpu')
@@ -142,18 +142,36 @@ class HFSegFormerWrapper(torch.nn.Module):
             model_keys = list(self.model.state_dict().keys())
             print(f"   模型参数示例键名: {model_keys[:5]}")
             
-            # 尝试加载权重
-            result = self.model.load_state_dict(state_dict, strict=False)
+            # 过滤掉分类器层（因为类别数不同）
+            # 预训练权重是 ADE20K (150类)，我们的数据集只有2类
+            filtered_state_dict = {}
+            skipped_keys = []
+            for k, v in state_dict.items():
+                # 跳过 decode_head.classifier 层（类别数不匹配）
+                if 'decode_head.classifier' in k or 'decode_head.linear_pred' in k:
+                    skipped_keys.append(k)
+                    continue
+                filtered_state_dict[k] = v
+            
+            if skipped_keys:
+                print(f"   ⚠️ 跳过分类器层 (类别数不匹配 150→{num_classes}): {skipped_keys}")
+            
+            # 尝试加载过滤后的权重
+            result = self.model.load_state_dict(filtered_state_dict, strict=False)
             loaded_count = len(model_keys) - len(result.missing_keys)
             
             if loaded_count > 0:
                 print(f"   ✅ Loaded {loaded_count}/{len(model_keys)} parameters from local weights")
+                print(f"   (分类器层将随机初始化，会在训练中学习)")
             else:
                 print(f"   ⚠️ No parameters loaded from local weights")
                 print(f"   权重格式可能与 HuggingFace SegFormer 不兼容")
             
             if result.missing_keys:
-                print(f"   Missing keys: {len(result.missing_keys)}")
+                # 过滤掉我们故意跳过的键
+                real_missing = [k for k in result.missing_keys if 'classifier' not in k and 'linear_pred' not in k]
+                if real_missing:
+                    print(f"   Missing keys: {len(real_missing)}")
             if result.unexpected_keys:
                 print(f"   Unexpected keys: {len(result.unexpected_keys)}")
                 
