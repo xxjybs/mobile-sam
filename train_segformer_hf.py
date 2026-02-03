@@ -135,6 +135,29 @@ class HFSegFormerWrapper(torch.nn.Module):
                 print(f"   Creating model from config...")
                 self._create_from_config(variant, num_classes)
     
+    def _analyze_checkpoint_config(self, state_dict):
+        """从权重文件分析模型配置"""
+        config_info = {}
+        
+        # 1. 检测 decoder_hidden_size (从 decode_head.linear_c.*.proj.weight)
+        for k, v in state_dict.items():
+            if 'decode_head.linear_c.0.proj.weight' in k:
+                config_info['decoder_hidden_size'] = v.shape[0]
+                break
+        
+        # 2. 检测 encoder hidden_sizes (从 layer_norm weights)
+        hidden_sizes = []
+        for i in range(4):
+            for k, v in state_dict.items():
+                if f'segformer.encoder.layer_norm.{i}.weight' in k:
+                    hidden_sizes.append(v.shape[0])
+                    break
+        
+        if len(hidden_sizes) == 4:
+            config_info['hidden_sizes'] = hidden_sizes
+        
+        return config_info
+    
     def _load_local_weights(self, weights_path, num_classes=2):
         """加载本地保存的 HuggingFace 权重文件"""
         try:
@@ -147,6 +170,43 @@ class HFSegFormerWrapper(torch.nn.Module):
                 elif 'state_dict' in state_dict:
                     state_dict = state_dict['state_dict']
             
+            # 分析权重配置
+            ckpt_config = self._analyze_checkpoint_config(state_dict)
+            if ckpt_config:
+                print(f"   === 权重配置分析 ===")
+                if 'hidden_sizes' in ckpt_config:
+                    print(f"   Encoder hidden_sizes: {ckpt_config['hidden_sizes']}")
+                if 'decoder_hidden_size' in ckpt_config:
+                    print(f"   Decoder hidden_size: {ckpt_config['decoder_hidden_size']}")
+                
+                # 获取当前模型配置
+                model_config = self.model.config
+                model_decoder_size = model_config.decoder_hidden_size
+                ckpt_decoder_size = ckpt_config.get('decoder_hidden_size', model_decoder_size)
+                
+                if model_decoder_size != ckpt_decoder_size:
+                    print(f"   ⚠️ Decoder 配置不匹配!")
+                    print(f"      权重: decoder_hidden_size={ckpt_decoder_size}")
+                    print(f"      模型: decoder_hidden_size={model_decoder_size}")
+                    print(f"   正在重新创建匹配的模型...")
+                    
+                    # 重新创建模型使用正确的配置
+                    new_config = SegformerConfig(
+                        num_channels=3,
+                        num_encoder_blocks=4,
+                        depths=model_config.depths,
+                        sr_ratios=model_config.sr_ratios,
+                        hidden_sizes=ckpt_config.get('hidden_sizes', model_config.hidden_sizes),
+                        num_attention_heads=model_config.num_attention_heads,
+                        patch_sizes=model_config.patch_sizes,
+                        strides=model_config.strides,
+                        mlp_ratios=model_config.mlp_ratios,
+                        num_labels=num_classes,
+                        decoder_hidden_size=ckpt_decoder_size,
+                    )
+                    self.model = SegformerForSemanticSegmentation(new_config)
+                    print(f"   ✅ 已创建匹配的模型 (decoder_hidden_size={ckpt_decoder_size})")
+            
             # 打印权重键名示例
             keys = list(state_dict.keys())
             print(f"   本地权重示例键名: {keys[:5]}")
@@ -155,19 +215,28 @@ class HFSegFormerWrapper(torch.nn.Module):
             model_keys = list(self.model.state_dict().keys())
             print(f"   模型参数示例键名: {model_keys[:5]}")
             
-            # 过滤掉分类器层（因为类别数不同）
+            # 过滤掉分类器层（因为类别数不同）和尺寸不匹配的层
             # 预训练权重是 ADE20K (150类)，我们的数据集只有2类
             filtered_state_dict = {}
             skipped_keys = []
+            model_state = self.model.state_dict()
+            
             for k, v in state_dict.items():
                 # 跳过 decode_head.classifier 层（类别数不匹配）
                 if 'decode_head.classifier' in k or 'decode_head.linear_pred' in k:
                     skipped_keys.append(k)
                     continue
+                
+                # 检查尺寸是否匹配
+                if k in model_state:
+                    if v.shape != model_state[k].shape:
+                        skipped_keys.append(f"{k} (shape mismatch: {v.shape} vs {model_state[k].shape})")
+                        continue
+                
                 filtered_state_dict[k] = v
             
             if skipped_keys:
-                print(f"   ⚠️ 跳过分类器层 (类别数不匹配 150→{num_classes}): {skipped_keys}")
+                print(f"   ⚠️ 跳过不兼容的层: {skipped_keys[:5]}{'...' if len(skipped_keys) > 5 else ''}")
             
             # 尝试加载过滤后的权重
             result = self.model.load_state_dict(filtered_state_dict, strict=False)
