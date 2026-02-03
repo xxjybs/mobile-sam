@@ -81,21 +81,34 @@ class HFSegFormerWrapper(torch.nn.Module):
             print(f"   ⚠️ 将尝试从配置创建模型...")
             model_name = 'nvidia/mit-b0'  # 回退到默认
         
-        # 获取模型变体
-        if 'b0' in model_name.lower():
-            variant = 'b0'
-        elif 'b1' in model_name.lower():
-            variant = 'b1'
-        elif 'b2' in model_name.lower():
-            variant = 'b2'
-        elif 'b3' in model_name.lower():
-            variant = 'b3'
-        elif 'b4' in model_name.lower():
-            variant = 'b4'
-        elif 'b5' in model_name.lower():
-            variant = 'b5'
-        else:
-            variant = 'b0'
+        # 获取模型变体 - 优先从本地权重文件名检测
+        variant = None
+        
+        # 先尝试从本地权重文件名检测模型变体
+        if local_weights:
+            weight_name = os.path.basename(local_weights).lower()
+            for v in ['b5', 'b4', 'b3', 'b2', 'b1', 'b0']:  # 从大到小检测
+                if f'b{v[-1]}' in weight_name or f'_b{v[-1]}' in weight_name or f'-b{v[-1]}' in weight_name:
+                    variant = v
+                    print(f"   ✅ 从权重文件名检测到模型变体: SegFormer-{variant.upper()}")
+                    break
+        
+        # 如果没有检测到，从 model_name 检测
+        if variant is None:
+            if 'b0' in model_name.lower():
+                variant = 'b0'
+            elif 'b1' in model_name.lower():
+                variant = 'b1'
+            elif 'b2' in model_name.lower():
+                variant = 'b2'
+            elif 'b3' in model_name.lower():
+                variant = 'b3'
+            elif 'b4' in model_name.lower():
+                variant = 'b4'
+            elif 'b5' in model_name.lower():
+                variant = 'b5'
+            else:
+                variant = 'b0'
         
         print(f"   Model variant: SegFormer-{variant.upper()}")
         
