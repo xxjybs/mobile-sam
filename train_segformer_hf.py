@@ -480,17 +480,40 @@ def predict_and_save(model, dataloader, save_dir, device, img_size):
     os.makedirs(save_dir, exist_ok=True)
     
     with torch.no_grad():
-        for idx, (images, _, filenames) in enumerate(dataloader):
-            images = images.to(device)
-            logits = model(images)
-            preds = (torch.sigmoid(logits) > 0.5).float()
-            
-            for i in range(preds.shape[0]):
-                pred_mask = preds[i, 0].cpu().numpy() * 255
-                pred_mask = pred_mask.astype(np.uint8)
+        for idx, batch in enumerate(dataloader):
+            # 处理不同的数据加载器返回格式
+            if len(batch) == 3:
+                images, _, filenames = batch
+            elif len(batch) == 2:
+                images, _ = batch
+                filenames = None
+            else:
+                images = batch[0]
+                filenames = None
                 
-                save_path = os.path.join(save_dir, f'{idx * images.shape[0] + i}.png')
-                cv2.imwrite(save_path, pred_mask)
+            images = images.to(device)
+            
+            try:
+                logits = model(images)
+                preds = (torch.sigmoid(logits) > 0.5).float()
+                
+                for i in range(preds.shape[0]):
+                    pred_mask = preds[i, 0].cpu().numpy() * 255
+                    pred_mask = pred_mask.astype(np.uint8)
+                    
+                    # 使用文件名或索引
+                    if filenames is not None:
+                        fname = filenames[i] if isinstance(filenames, (list, tuple)) else filenames
+                        if not fname.endswith('.png'):
+                            fname = fname + '.png' if '.' not in fname else fname.rsplit('.', 1)[0] + '.png'
+                    else:
+                        fname = f'{idx * images.shape[0] + i}.png'
+                    
+                    save_path = os.path.join(save_dir, fname)
+                    cv2.imwrite(save_path, pred_mask)
+            except Exception as e:
+                print(f"Error in prediction batch {idx}: {e}")
+                continue
 
 
 def main():
