@@ -93,7 +93,8 @@ def load_model_with_checkpoint(model_config, device):
         if ckpt_format == 'pth':
             load_checkpoint(model, ckpt_path, device, model_key)
         else:  # pt格式
-            ckpt = torch.load(ckpt_path, map_location=device)
+            # PyTorch 2.6+ 默认 weights_only=True，需要设置为 False
+            ckpt = torch.load(ckpt_path, map_location=device, weights_only=False)
             if "model" in ckpt:
                 state_dict = ckpt["model"]
             elif "state_dict" in ckpt:
