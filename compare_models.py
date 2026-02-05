@@ -73,6 +73,36 @@ FIGURE_FORMAT = 'png'
 
 # ==================== 辅助函数 / Helper Functions ====================
 
+def analyze_hf_checkpoint(state_dict):
+    """
+    分析 HuggingFace SegFormer checkpoint 配置 / Analyze checkpoint configuration
+    
+    从权重文件自动检测:
+    - encoder hidden_sizes
+    - decoder hidden_size
+    """
+    config_info = {}
+    
+    # 1. 检测 decoder_hidden_size (从 decode_head.linear_c.0.proj.weight)
+    for k, v in state_dict.items():
+        if 'decode_head.linear_c.0.proj.weight' in k:
+            config_info['decoder_hidden_size'] = v.shape[0]
+            break
+    
+    # 2. 检测 encoder hidden_sizes (从 layer_norm weights)
+    hidden_sizes = []
+    for i in range(4):
+        for k, v in state_dict.items():
+            if f'segformer.encoder.layer_norm.{i}.weight' in k:
+                hidden_sizes.append(v.shape[0])
+                break
+    
+    if len(hidden_sizes) == 4:
+        config_info['hidden_sizes'] = hidden_sizes
+    
+    return config_info
+
+
 def load_hf_segformer(variant, ckpt_path, device, num_classes=2):
     """
     加载 HuggingFace SegFormer 模型 / Load HuggingFace SegFormer model
@@ -92,23 +122,53 @@ def load_hf_segformer(variant, ckpt_path, device, num_classes=2):
         print("❌ transformers library not installed. Install with: pip install transformers")
         return None
     
-    # 根据变体创建配置
+    # 根据变体创建默认配置
     variant_configs = {
-        'b0': {'hidden_sizes': [32, 64, 160, 256], 'depths': [2, 2, 2, 2], 'decoder_hidden_size': 256},
-        'b1': {'hidden_sizes': [64, 128, 320, 512], 'depths': [2, 2, 2, 2], 'decoder_hidden_size': 256},
-        'b2': {'hidden_sizes': [64, 128, 320, 512], 'depths': [3, 4, 6, 3], 'decoder_hidden_size': 768},
-        'b3': {'hidden_sizes': [64, 128, 320, 512], 'depths': [3, 4, 18, 3], 'decoder_hidden_size': 768},
-        'b4': {'hidden_sizes': [64, 128, 320, 512], 'depths': [3, 8, 27, 3], 'decoder_hidden_size': 768},
-        'b5': {'hidden_sizes': [64, 128, 320, 512], 'depths': [3, 6, 40, 3], 'decoder_hidden_size': 768},
+        'b0': {
+            'hidden_sizes': [32, 64, 160, 256], 
+            'depths': [2, 2, 2, 2], 
+            'num_attention_heads': [1, 2, 5, 8],
+            'decoder_hidden_size': 256
+        },
+        'b1': {
+            'hidden_sizes': [64, 128, 320, 512], 
+            'depths': [2, 2, 2, 2], 
+            'num_attention_heads': [1, 2, 5, 8],
+            'decoder_hidden_size': 256
+        },
+        'b2': {
+            'hidden_sizes': [64, 128, 320, 512], 
+            'depths': [3, 4, 6, 3], 
+            'num_attention_heads': [1, 2, 5, 8],
+            'decoder_hidden_size': 768
+        },
+        'b3': {
+            'hidden_sizes': [64, 128, 320, 512], 
+            'depths': [3, 4, 18, 3], 
+            'num_attention_heads': [1, 2, 5, 8],
+            'decoder_hidden_size': 768
+        },
+        'b4': {
+            'hidden_sizes': [64, 128, 320, 512], 
+            'depths': [3, 8, 27, 3], 
+            'num_attention_heads': [1, 2, 5, 8],
+            'decoder_hidden_size': 768
+        },
+        'b5': {
+            'hidden_sizes': [64, 128, 320, 512], 
+            'depths': [3, 6, 40, 3], 
+            'num_attention_heads': [1, 2, 5, 8],
+            'decoder_hidden_size': 768
+        },
     }
     
     if variant not in variant_configs:
         print(f"⚠️ Unknown SegFormer variant: {variant}, using b0")
         variant = 'b0'
     
-    v_config = variant_configs[variant]
+    v_config = variant_configs[variant].copy()
     
-    # 先加载权重检查 decoder_hidden_size
+    # 先加载权重
     ckpt = torch.load(ckpt_path, map_location=device, weights_only=False)
     if 'model_state_dict' in ckpt:
         state_dict = ckpt['model_state_dict']
@@ -117,34 +177,59 @@ def load_hf_segformer(variant, ckpt_path, device, num_classes=2):
     else:
         state_dict = ckpt
     
-    # 从权重中检测 decoder_hidden_size
-    for key in state_dict.keys():
-        if 'decode_head.linear_c.0.proj.weight' in key:
-            detected_size = state_dict[key].shape[0]
-            if detected_size != v_config['decoder_hidden_size']:
-                print(f"    检测到 decoder_hidden_size={detected_size} (覆盖默认值 {v_config['decoder_hidden_size']})")
-                v_config['decoder_hidden_size'] = detected_size
-            break
+    # 打印示例键名用于调试
+    sample_keys = list(state_dict.keys())[:5]
+    print(f"    权重键名示例: {sample_keys}")
+    
+    # 从权重中分析配置
+    ckpt_config = analyze_hf_checkpoint(state_dict)
+    
+    if ckpt_config:
+        print(f"    === 权重配置分析 ===")
+        if 'hidden_sizes' in ckpt_config:
+            print(f"    Encoder hidden_sizes: {ckpt_config['hidden_sizes']}")
+            v_config['hidden_sizes'] = ckpt_config['hidden_sizes']
+        if 'decoder_hidden_size' in ckpt_config:
+            print(f"    Decoder hidden_size: {ckpt_config['decoder_hidden_size']}")
+            v_config['decoder_hidden_size'] = ckpt_config['decoder_hidden_size']
     
     # 创建配置
     config = SegformerConfig(
         num_labels=num_classes,
-        hidden_sizes=v_config['hidden_sizes'],
+        num_encoder_blocks=4,
         depths=v_config['depths'],
+        sr_ratios=[8, 4, 2, 1],
+        hidden_sizes=v_config['hidden_sizes'],
+        num_attention_heads=v_config['num_attention_heads'],
+        patch_sizes=[7, 3, 3, 3],
+        strides=[4, 2, 2, 2],
         decoder_hidden_size=v_config['decoder_hidden_size'],
     )
+    
+    print(f"    创建模型配置: hidden_sizes={v_config['hidden_sizes']}, decoder_hidden_size={v_config['decoder_hidden_size']}")
     
     # 创建模型
     model = SegformerForSemanticSegmentation(config)
     
+    # 跳过分类器层（类别数不匹配）
+    keys_to_skip = []
+    for key in state_dict.keys():
+        if 'decode_head.classifier' in key:
+            keys_to_skip.append(key)
+    
+    if keys_to_skip:
+        print(f"    跳过分类器层 (类别数可能不匹配): {len(keys_to_skip)} keys")
+        for key in keys_to_skip:
+            del state_dict[key]
+    
     # 加载权重
     missing, unexpected = model.load_state_dict(state_dict, strict=False)
     loaded = len(model.state_dict()) - len(missing)
-    print(f"    Loaded: {loaded}/{len(model.state_dict())} params")
-    if len(missing) > 0 and len(missing) <= 5:
+    print(f"    ✅ Loaded: {loaded}/{len(model.state_dict())} params")
+    if len(missing) > 0 and len(missing) <= 10:
         print(f"    Missing: {missing}")
-    elif len(missing) > 5:
-        print(f"    Missing: {len(missing)} params")
+    elif len(missing) > 10:
+        print(f"    Missing: {len(missing)} params (分类器层会重新学习)")
     
     return model
 
