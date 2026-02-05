@@ -235,16 +235,26 @@ def load_hf_segformer(variant, ckpt_path, device, num_classes=2):
     # 创建模型
     model = SegformerForSemanticSegmentation(config)
     
-    # 跳过分类器层（类别数不匹配）
+    # 检查分类器层是否需要跳过（只在类别数不匹配时跳过）
+    classifier_weight_key = 'decode_head.classifier.weight'
     keys_to_skip = []
-    for key in state_dict.keys():
-        if 'decode_head.classifier' in key:
-            keys_to_skip.append(key)
     
-    if keys_to_skip:
-        print(f"    跳过分类器层 (类别数可能不匹配): {len(keys_to_skip)} keys")
-        for key in keys_to_skip:
-            del state_dict[key]
+    if classifier_weight_key in state_dict:
+        # 检查分类器层的输出维度
+        classifier_weight = state_dict[classifier_weight_key]
+        ckpt_num_classes = classifier_weight.shape[0]
+        
+        if ckpt_num_classes != num_classes:
+            # 类别数不匹配，跳过分类器层
+            print(f"    ⚠️ 分类器层类别数不匹配: 权重={ckpt_num_classes}, 模型={num_classes}")
+            print(f"    跳过分类器层，将随机初始化")
+            for key in list(state_dict.keys()):
+                if 'decode_head.classifier' in key:
+                    keys_to_skip.append(key)
+                    del state_dict[key]
+        else:
+            # 类别数匹配，正常加载
+            print(f"    ✅ 分类器层类别数匹配 ({ckpt_num_classes} classes)，将完整加载")
     
     # 加载权重
     missing, unexpected = model.load_state_dict(state_dict, strict=False)
