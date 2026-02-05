@@ -73,6 +73,27 @@ FIGURE_FORMAT = 'png'
 
 # ==================== 辅助函数 / Helper Functions ====================
 
+def strip_model_prefix(state_dict):
+    """
+    移除 state_dict 键名中的 'model.' 前缀
+    train_segformer_hf.py 保存的权重有 'model.' 前缀，需要去掉
+    """
+    new_state_dict = {}
+    has_prefix = False
+    
+    for k, v in state_dict.items():
+        if k.startswith('model.'):
+            new_state_dict[k[6:]] = v  # 去掉 "model." 前缀 (6个字符)
+            has_prefix = True
+        else:
+            new_state_dict[k] = v
+    
+    if has_prefix:
+        print(f"    ✅ 已移除 'model.' 前缀")
+    
+    return new_state_dict
+
+
 def analyze_hf_checkpoint(state_dict):
     """
     分析 HuggingFace SegFormer checkpoint 配置 / Analyze checkpoint configuration
@@ -180,6 +201,9 @@ def load_hf_segformer(variant, ckpt_path, device, num_classes=2):
     # 打印示例键名用于调试
     sample_keys = list(state_dict.keys())[:5]
     print(f"    权重键名示例: {sample_keys}")
+    
+    # 移除 model. 前缀 (train_segformer_hf.py 保存时会加上这个前缀)
+    state_dict = strip_model_prefix(state_dict)
     
     # 从权重中分析配置
     ckpt_config = analyze_hf_checkpoint(state_dict)
