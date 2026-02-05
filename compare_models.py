@@ -7,8 +7,8 @@ Generates comparison figures like figure2.png showing different models' performa
 支持的模型 / Supported models:
 - mobile-sam-adapter (.pth格式): 自定义模型
 - sam2.1_hiera_tiny (.pt格式)
-- segformerb0 (.pt格式)
-- segformerb1 (.pt格式)
+- segformerb0_hf (.pth格式): HuggingFace SegFormer
+- segformerb1_hf (.pth格式): HuggingFace SegFormer
 - mobile_sam (.pt格式)
 """
 
@@ -44,16 +44,17 @@ MODEL_CONFIGS = {
         'ckpt_format': 'pt',
         'display_name': 'SAM2.1 Hiera Tiny',
     },
+    # HuggingFace SegFormer 模型 (用 train_segformer_hf.py 训练的)
     'segformerb0': {
-        'model_key': 'SegFormerB0',
-        'ckpt_path': './checkpoints/segformerb0.pt',
-        'ckpt_format': 'pt',
+        'model_key': 'segformer_hf_b0',  # 特殊标记，使用HuggingFace加载
+        'ckpt_path': './save/segformer_hf/best_model.pth',
+        'ckpt_format': 'hf_pth',  # HuggingFace格式的pth
         'display_name': 'SegFormer-B0',
     },
     'segformerb1': {
-        'model_key': 'SegFormerB1',
-        'ckpt_path': './checkpoints/segformerb1.pt',
-        'ckpt_format': 'pt',
+        'model_key': 'segformer_hf_b1',  # 特殊标记，使用HuggingFace加载
+        'ckpt_path': './save/segformer_1hf/best_model.pth',
+        'ckpt_format': 'hf_pth',  # HuggingFace格式的pth
         'display_name': 'SegFormer-B1',
     },
     'mobile_sam': {
@@ -72,6 +73,105 @@ FIGURE_FORMAT = 'png'
 
 # ==================== 辅助函数 / Helper Functions ====================
 
+def load_hf_segformer(variant, ckpt_path, device, num_classes=2):
+    """
+    加载 HuggingFace SegFormer 模型 / Load HuggingFace SegFormer model
+    
+    Args:
+        variant: 'b0', 'b1', 'b2', etc.
+        ckpt_path: checkpoint 路径
+        device: cuda/cpu
+        num_classes: 类别数
+    
+    Returns:
+        model: 加载好权重的模型
+    """
+    try:
+        from transformers import SegformerForSemanticSegmentation, SegformerConfig
+    except ImportError:
+        print("❌ transformers library not installed. Install with: pip install transformers")
+        return None
+    
+    # 根据变体创建配置
+    variant_configs = {
+        'b0': {'hidden_sizes': [32, 64, 160, 256], 'depths': [2, 2, 2, 2], 'decoder_hidden_size': 256},
+        'b1': {'hidden_sizes': [64, 128, 320, 512], 'depths': [2, 2, 2, 2], 'decoder_hidden_size': 256},
+        'b2': {'hidden_sizes': [64, 128, 320, 512], 'depths': [3, 4, 6, 3], 'decoder_hidden_size': 768},
+        'b3': {'hidden_sizes': [64, 128, 320, 512], 'depths': [3, 4, 18, 3], 'decoder_hidden_size': 768},
+        'b4': {'hidden_sizes': [64, 128, 320, 512], 'depths': [3, 8, 27, 3], 'decoder_hidden_size': 768},
+        'b5': {'hidden_sizes': [64, 128, 320, 512], 'depths': [3, 6, 40, 3], 'decoder_hidden_size': 768},
+    }
+    
+    if variant not in variant_configs:
+        print(f"⚠️ Unknown SegFormer variant: {variant}, using b0")
+        variant = 'b0'
+    
+    v_config = variant_configs[variant]
+    
+    # 先加载权重检查 decoder_hidden_size
+    ckpt = torch.load(ckpt_path, map_location=device, weights_only=False)
+    if 'model_state_dict' in ckpt:
+        state_dict = ckpt['model_state_dict']
+    elif 'state_dict' in ckpt:
+        state_dict = ckpt['state_dict']
+    else:
+        state_dict = ckpt
+    
+    # 从权重中检测 decoder_hidden_size
+    for key in state_dict.keys():
+        if 'decode_head.linear_c.0.proj.weight' in key:
+            detected_size = state_dict[key].shape[0]
+            if detected_size != v_config['decoder_hidden_size']:
+                print(f"    检测到 decoder_hidden_size={detected_size} (覆盖默认值 {v_config['decoder_hidden_size']})")
+                v_config['decoder_hidden_size'] = detected_size
+            break
+    
+    # 创建配置
+    config = SegformerConfig(
+        num_labels=num_classes,
+        hidden_sizes=v_config['hidden_sizes'],
+        depths=v_config['depths'],
+        decoder_hidden_size=v_config['decoder_hidden_size'],
+    )
+    
+    # 创建模型
+    model = SegformerForSemanticSegmentation(config)
+    
+    # 加载权重
+    missing, unexpected = model.load_state_dict(state_dict, strict=False)
+    loaded = len(model.state_dict()) - len(missing)
+    print(f"    Loaded: {loaded}/{len(model.state_dict())} params")
+    if len(missing) > 0 and len(missing) <= 5:
+        print(f"    Missing: {missing}")
+    elif len(missing) > 5:
+        print(f"    Missing: {len(missing)} params")
+    
+    return model
+
+
+class HFSegFormerWrapper(torch.nn.Module):
+    """
+    HuggingFace SegFormer 包装器，统一接口
+    """
+    def __init__(self, hf_model):
+        super().__init__()
+        self.model = hf_model
+    
+    def forward(self, x):
+        # HuggingFace SegFormer 输出是 SegformerOutput
+        outputs = self.model(x)
+        logits = outputs.logits  # [B, num_classes, H/4, W/4]
+        
+        # 上采样到输入尺寸
+        logits = F.interpolate(logits, size=x.shape[2:], mode='bilinear', align_corners=False)
+        
+        # 取前景通道 (channel 1)
+        if logits.shape[1] == 2:
+            return logits[:, 1:2, :, :]  # [B, 1, H, W]
+        else:
+            return logits
+
+
 def load_model_with_checkpoint(model_config, device):
     """
     加载模型并载入checkpoint / Load model and checkpoint
@@ -84,15 +184,25 @@ def load_model_with_checkpoint(model_config, device):
         print(f"⚠️ Checkpoint not found: {ckpt_path}")
         return None
     
-    # 创建模型
     print(f"  Loading model: {model_config['display_name']}")
-    model = model_dict[model_key]()
     
-    # 加载权重
     try:
-        if ckpt_format == 'pth':
+        # HuggingFace SegFormer 模型
+        if ckpt_format == 'hf_pth':
+            # 从 model_key 中提取变体 (segformer_hf_b0 -> b0)
+            variant = model_key.split('_')[-1]  # 'b0', 'b1', etc.
+            hf_model = load_hf_segformer(variant, ckpt_path, device)
+            if hf_model is None:
+                return None
+            model = HFSegFormerWrapper(hf_model)
+        
+        # 项目内置模型
+        elif ckpt_format == 'pth':
+            model = model_dict[model_key]()
             load_checkpoint(model, ckpt_path, device, model_key)
+        
         else:  # pt格式
+            model = model_dict[model_key]()
             # PyTorch 2.6+ 默认 weights_only=True，需要设置为 False
             ckpt = torch.load(ckpt_path, map_location=device, weights_only=False)
             if "model" in ckpt:
@@ -116,6 +226,8 @@ def load_model_with_checkpoint(model_config, device):
     
     except Exception as e:
         print(f"❌ Error loading {model_config['display_name']}: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 
