@@ -112,7 +112,20 @@ def evaluate_segmentation(pred_dir, gt_dir):
     return iou_list
 
 
-def pred(val_loader, model, val_img_names, save_path, gt_folder, inp_size, is_onehot=False):
+def pred(val_loader, model, val_img_names, save_path, gt_folder, inp_size, is_onehot=False, postprocessor=None):
+    """
+    模型预测并保存结果
+    
+    Args:
+        val_loader: 验证数据加载器
+        model: 模型
+        val_img_names: 验证图像名称列表
+        save_path: 保存路径
+        gt_folder: 真值文件夹路径
+        inp_size: 输入尺寸
+        is_onehot: 是否使用one-hot编码
+        postprocessor: 后处理器实例（可选），用于优化闭合区域分割
+    """
     model.eval()
     with torch.no_grad():
         for i, batch in enumerate(val_loader):
@@ -131,6 +144,11 @@ def pred(val_loader, model, val_img_names, save_path, gt_folder, inp_size, is_on
             pred_mask_bin = (pred_mask > 0.5).float() * 255
 
             mask_img = Image.fromarray(pred_mask_bin.byte().cpu().numpy())
+            
+            # 应用后处理（如果提供了后处理器）
+            if postprocessor is not None:
+                mask_img = postprocessor(mask_img)
+            
             mask_img.save(os.path.join(save_path, f"{val_img_names[i]}.png"))
 
     print("✅ 预测完成，结果保存在:", save_path)
@@ -214,8 +232,23 @@ def Distill_one_epoch(
 
 def train_one_epoch(
         model, traindataloader, is_onehot,
-        criterion_bce, criterion_iou, optimizer
+        criterion_bce, criterion_iou, optimizer,
+        criterion_dice=None, criterion_tversky=None
 ):
+    """
+    单个epoch的训练循环
+    Training loop for a single epoch
+    
+    Args:
+        model: 模型
+        traindataloader: 训练数据加载器
+        is_onehot: 是否使用one-hot编码
+        criterion_bce: BCE损失函数
+        criterion_iou: IoU损失函数
+        optimizer: 优化器
+        criterion_dice: Dice损失函数（可选，用于增强大块区域分割）
+        criterion_tversky: Tversky损失函数（可选，用于处理类别不平衡）
+    """
     model.train()
     losses = AverageMeter()
     for idx, data in enumerate(traindataloader):
@@ -229,10 +262,23 @@ def train_one_epoch(
         logit = model(input)
         # logit, boundary = model(input)
 
-        if is_onehot:
-            loss = criterion_bce(logit, onehot.float()) + criterion_iou(logit, onehot.float())
+        # 方案A：完全移除 BCE，只用区域敏感损失 (Dice + Tversky)
+        # Solution A: Completely remove BCE, use only region-sensitive losses (Dice + Tversky)
+        if criterion_dice is not None and criterion_tversky is not None:
+            pred_prob = torch.sigmoid(logit)
+            if is_onehot:
+                # 只用 Dice + Tversky，不用 BCE 和 IoU
+                # Use only Dice + Tversky, no BCE and IoU
+                loss = 3.0 * criterion_dice(pred_prob, onehot.float()) + 5.0 * criterion_tversky(logit, onehot.float())
+            else:
+                loss = 3.0 * criterion_dice(pred_prob, target.float()) + 5.0 * criterion_tversky(logit, target.float())
         else:
-            loss = criterion_bce(logit, target.float()) + criterion_iou(logit, target.float()) #+ criterion_boundary(boundary, target)
+            # 回退到原来的 BCE + IoU
+            # Fallback to original BCE + IoU
+            if is_onehot:
+                loss = criterion_bce(logit, onehot.float()) + criterion_iou(logit, onehot.float())
+            else:
+                loss = criterion_bce(logit, target.float()) + criterion_iou(logit, target.float())
 
         losses.update(loss.item(), input.size(0))
         loss.backward()

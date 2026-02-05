@@ -3,7 +3,8 @@ import torch
 
 def load_checkpoint(model, checkpoint_pth: str, device, model_name=None):
     """加载预训练权重，并打印详细匹配信息，同时冻结已加载参数"""
-    ckpt = torch.load(checkpoint_pth, map_location=device)
+    # PyTorch 2.6+ 默认 weights_only=True，需要设置为 False 以兼容旧格式的 checkpoint
+    ckpt = torch.load(checkpoint_pth, map_location=device, weights_only=False)
 
     if "model" in ckpt:
         state_dict = ckpt["model"]
